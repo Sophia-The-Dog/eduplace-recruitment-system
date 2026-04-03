@@ -6,7 +6,10 @@
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "handle": "filesystem" },
+    { "src": "/api/health", "dest": "/api/health.py" },
+    { "src": "/api/webhook", "dest": "/api/webhook.py" },
+    { "src": "/api/resume/parse", "dest": "/api/resume/parse.py" },
+    { "src": "/api/resume/generate", "dest": "/api/resume/generate.py" },
     { "src": "/dashboard", "dest": "/public/dashboard.html" },
     { "src": "/architecture", "dest": "/public/architecture.html" },
     { "src": "/automations", "dest": "/public/automations.html" },
