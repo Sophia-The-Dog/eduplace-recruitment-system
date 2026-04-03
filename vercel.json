@@ -1,21 +1,15 @@
 {
   "version": 2,
-  "rewrites": [
-    {
-      "source": "/dashboard",
-      "destination": "/public/dashboard.html"
-    },
-    {
-      "source": "/architecture",
-      "destination": "/public/architecture.html"
-    },
-    {
-      "source": "/automations",
-      "destination": "/public/automations.html"
-    },
-    {
-      "source": "/((?!api|public).*)",
-      "destination": "/public/$1"
-    }
+  "name": "eduplace-recruitment-system",
+  "builds": [
+    { "src": "api/**/*.py", "use": "@vercel/python" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/dashboard", "dest": "/public/dashboard.html" },
+    { "src": "/architecture", "dest": "/public/architecture.html" },
+    { "src": "/automations", "dest": "/public/automations.html" },
+    { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
