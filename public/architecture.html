@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eduplace Recruitment Operating System - Architecture Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1B2A4A;
+            --blue: #2E86AB;
+            --gold: #D4A84B;
+            --gray: #6B7B8D;
+            --light: #F5F7FA;
+            --white: #FFFFFF;
+            --success: #27AE60;
+            --warning: #E74C3C;
+            --info: #3498DB;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--navy);
+            background: linear-gradient(135deg, #F5F7FA 0%, #E8EEF5 100%);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--navy);
+            color: var(--white);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            background: linear-gradient(135deg, var(--gold), #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 0;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.8rem 1.5rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(212, 168, 75, 0.1);
+            color: var(--gold);
+            border-left-color: var(--gold);
+            padding-left: 1.8rem;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 3rem;
+            background: var(--light);
+        }
+
+        header {
+            background: var(--white);
+            padding: 2rem 2.5rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--gold);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.05rem;
+            color: var(--gray);
+            max-width: 800px;
+        }
+
+        .section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            scroll-margin-top: 100px;
+        }
+
+        .section h2 {
+            color: var(--navy);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .section h3 {
+            color: var(--blue);
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .section h3:first-of-type {
+            margin-top: 0;
+        }
+
+        .icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, var(--light) 0%, #FFFFFF 100%);
+            border: 1px solid #E0E6ED;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(46, 134, 171, 0.15);
+            border-color: var(--blue);
+            transform: translateY(-2px);
+        }
+
+        .card h4 {
+            color: var(--navy);
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--blue);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge.secondary {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .badge.success {
+            background: var(--success);
+        }
+
+        .diagram {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #F5F7FA 0%, #EEF2F7 100%);
+            border-radius: 8px;
+            border: 1px solid #D0D8E0;
+            overflow-x: auto;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .table-spec {
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--blue);
+            padding-left: 1.5rem;
+            background: #F8FAFC;
+            padding: 1rem 1rem 1rem 1.5rem;
+            border-radius: 4px;
+        }
+
+        .table-spec h4 {
+            color: var(--blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .field-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .field-item {
+            padding: 0.8rem;
+            background: var(--white);
+            border: 1px solid #E0E6ED;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .field-item strong {
+            color: var(--blue);
+        }
+
+        .lifecycle-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .step {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--light) 0%, #FFFFFF 100%);
+            border: 2px solid #E0E6ED;
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            border-color: var(--blue);
+            box-shadow: 0 4px 12px rgba(46, 134, 171, 0.1);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--blue);
+            color: white;
+            border-radius: 50%;
+            line-height: 40px;
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+        }
+
+        .step h4 {
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .step p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: var(--navy);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #E0E6ED;
+        }
+
+        tr:hover {
+            background: var(--light);
+        }
+
+        .collapsible {
+            cursor: pointer;
+            padding: 1rem;
+            background: #F8FAFC;
+            border: 1px solid #E0E6ED;
+            border-radius: 6px;
+            margin: 1rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .collapsible:hover {
+            background: #EEF2F7;
+            border-color: var(--blue);
+        }
+
+        .collapsible.active {
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+
+        .collapsible-content {
+            display: none;
+            padding: 1.5rem;
+            background: #F8FAFC;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--blue);
+            border-radius: 4px;
+        }
+
+        .collapsible-content.active {
+            display: block;
+        }
+
+        .permission-matrix {
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .permission-matrix table {
+            margin: 1rem 0;
+        }
+
+        .permission-check {
+            text-align: center;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .permission-cross {
+            text-align: center;
+            color: #999;
+        }
+
+        @media print {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 2rem;
+            }
+            .collapsible-content {
+                display: block !important;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+            header h1 {
+                font-size: 1.5rem;
+            }
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Eduplace</h1>
+                <p>System Architecture Documentation</p>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li><a href="#overview" class="nav-link active">System Overview</a></li>
+                    <li><a href="#data-model" class="nav-link">Data Model</a></li>
+                    <li><a href="#relationships" class="nav-link">Relationships</a></li>
+                    <li><a href="#lifecycle" class="nav-link">Lifecycle Flow</a></li>
+                    <li><a href="#interfaces" class="nav-link">Dashboards</a></li>
+                    <li><a href="#roles" class="nav-link">Roles & Permissions</a></li>
+                    <li><a href="#governance" class="nav-link">Data Governance</a></li>
+                    <li><a href="#resume" class="nav-link">Resume Engine</a></li>
+                    <li><a href="#integrations" class="nav-link">Integrations</a></li>
+                    <li><a href="#phaseplan" class="nav-link">Build Plan</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <h1>Eduplace Recruitment Operating System</h1>
+                <p>Complete system architecture documentation for the teacher recruitment platform. This document serves as the single source of truth for all system components, data structures, workflows, and integrations.</p>
+            </header>
+
+            <!-- SECTION 1: SYSTEM OVERVIEW -->
+            <section id="overview" class="section">
+                <h2>🏗️ System Overview</h2>
+
+                <h3>Architecture Diagram</h3>
+                <div class="diagram">
+                    <svg viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Input Sources -->
+                        <rect x="20" y="20" width="140" height="80" fill="#2E86AB" stroke="#1B2A4A" stroke-width="2" rx="6"/>
+                        <text x="90" y="55" text-anchor="middle" fill="white" font-weight="bold">Web Forms</text>
+                        <text x="90" y="75" text-anchor="middle" fill="white" font-size="12">Teacher Submissions</text>
+
+                        <rect x="180" y="20" width="140" height="80" fill="#2E86AB" stroke="#1B2A4A" stroke-width="2" rx="6"/>
+                        <text x="250" y="55" text-anchor="middle" fill="white" font-weight="bold">Email Import</text>
+                        <text x="250" y="75" text-anchor="middle" fill="white" font-size="12">Candidate Profiles</text>
+
+                        <rect x="340" y="20" width="140" height="80" fill="#2E86AB" stroke="#1B2A4A" stroke-width="2" rx="6"/>
+                        <text x="410" y="55" text-anchor="middle" fill="white" font-weight="bold">Resume Parser</text>
+                        <text x="410" y="75" text-anchor="middle" fill="white" font-size="12">Skill Extraction</text>
+
+                        <!-- Central Database -->
+                        <rect x="280" y="150" width="440" height="120" fill="#D4A84B" stroke="#1B2A4A" stroke-width="3" rx="8"/>
+                        <text x="500" y="175" text-anchor="middle" fill="white" font-weight="bold" font-size="18">AIRTABLE BASE</text>
+                        <text x="500" y="195" text-anchor="middle" fill="white" font-size="12">appC97LZ25VRInfRq</text>
+                        <text x="500" y="215" text-anchor="middle" fill="white" font-size="11">16 Tables | Relational Data | 5 AI Fields</text>
+                        <text x="500" y="235" text-anchor="middle" fill="white" font-size="11">Candidates | Vacancies | Clients | Applications | Placements | Interviews | Tasks | Documents</text>
+
+                        <!-- Output/Dashboards -->
+                        <rect x="50" y="300" width="130" height="70" fill="#27AE60" stroke="#1B2A4A" stroke-width="2" rx="6"/>
+                        <text x="115" y="325" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Recruiter</text>
+                        <text x="115" y="345" text-anchor="middle" fill="white" font-size="11">Dashboard</text>
+
+                        <rect x="210" y="300" width="130" height="70" fill="#27AE60" stroke="#1B2A4A" stroke-width="2" rx="6"/>
+                        <text x="275" y="325" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Client</text>
+                        <text x="275" y="345" text-anchor="middle" fill="white" font-size="11">Dashboard</text>
+
+                        <rect x="370" y="300" width="130" height="70" fill="#27AE60" stroke="#1B2A4A" stroke-width="2" rx="6"/>
+                        <text x="435" y="325" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Executive</text>
+                        <text x="435" y="345" text-anchor="middle" fill="white" font-size="11">Dashboard</text>
+
+                        <rect x="530" y="300" width="130" height="70" fill="#27AE60" stroke="#1B2A4A" stroke-width="2" rx="6"/>
+                        <text x="595" y="325" text-anchor="middle" fill="white" font-weight="bold" font-size="12">Finance</text>
+                        <text x="595" y="345" text-anchor="middle" fill="white" font-size="11">Dashboard</text>
+
+                        <!-- Arrows -->
+                        <path d="M 90 100 Q 100 120 200 150" stroke="#1B2A4A" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 250 100 Q 280 120 350 150" stroke="#1B2A4A" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 410 100 Q 450 120 550 150" stroke="#1B2A4A" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+                        <path d="M 360 270 L 280 300" stroke="#1B2A4A" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 420 270 L 360 300" stroke="#1B2A4A" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 500 270 L 490 300" stroke="#1B2A4A" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 580 270 L 620 300" stroke="#1B2A4A" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#1B2A4A"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <h3>Technology Stack</h3>
+                <div class="architecture-grid">
+                    <div class="card">
+                        <h4>Data Layer</h4>
+                        <p><strong>Airtable</strong> - Relational database with 16 tables, API access, and scripting capabilities</p>
+                        <div class="badge">Primary DB</div>
+                    </div>
+                    <div class="card">
+                        <h4>Integration Layer</h4>
+                        <p><strong>Make.com</strong> - Workflow automation, API orchestration, and webhook management</p>
+                        <div class="badge">Automation</div>
+                    </div>
+                    <div class="card">
+                        <h4>AI & Processing</h4>
+                        <p><strong>Resume Parser API</strong> - Extract skills, experience, and qualifications from CV files</p>
+                        <div class="badge">AI/ML</div>
+                    </div>
+                    <div class="card">
+                        <h4>Communication</h4>
+                        <p><strong>WhatsApp Business API</strong> - Direct candidate messaging and notifications</p>
+                        <div class="badge">Messaging</div>
+                    </div>
+                    <div class="card">
+                        <h4>Email Integration</h4>
+                        <p><strong>SMTP/IMAP</strong> - Email capture, forwarding, and auto-responses</p>
+                        <div class="badge">Messaging</div>
+                    </div>
+                    <div class="card">
+                        <h4>Document Generation</h4>
+                        <p><strong>PDF Generation API</strong> - Create invoices, offer letters, and reports</p>
+                        <div class="badge">Output</div>
+                    </div>
+                </div>
+
+                <h3>Design Principles</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Principle</th>
+                            <th>Description</th>
+                            <th>Implementation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Single Source of Truth</strong></td>
+                            <td>All data lives in Airtable. No data silos or duplicates.</td>
+                            <td>Relational schema, deduplication rules, audit trail</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Workflow Automation</strong></td>
+                            <td>Manual tasks are automated when possible</td>
+                            <td>Make.com automations, email triggers, status-based actions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transparency</strong></td>
+                            <td>Every action is logged, every decision is tracked</td>
+                            <td>Communication Log, Activity timestamps, Notes fields</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Scalability</strong></td>
+                            <td>System grows without losing performance</td>
+                            <td>Modular interface design, batch processing, archival</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Role-Based Access</strong></td>
+                            <td>Users see only what they need for their role</td>
+                            <td>6 roles with granular permissions per table</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Quality</strong></td>
+                            <td>Consistent, validated data throughout</td>
+                            <td>Required fields, validation rules, compliance checks</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Phase Plan & Timeline</h3>
+                <div class="lifecycle-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h4>Foundation</h4>
+                        <p><strong>Weeks 1-3</strong></p>
+                        <p>Schema design, core interfaces, basic automations</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h4>Intelligence</h4>
+                        <p><strong>Weeks 4-6</strong></p>
+                        <p>Resume parser, advanced automations, reporting</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h4>Client Experience</h4>
+                        <p><strong>Weeks 7-10</strong></p>
+                        <p>Client dashboards, branded outputs, finance tools</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h4>Enterprise</h4>
+                        <p><strong>Optional</strong></p>
+                        <p>Custom frontend, API, SaaS multi-tenancy</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: DATA MODEL -->
+            <section id="data-model" class="section">
+                <h2>📊 Data Model</h2>
+
+                <h3>Entity Relationship Diagram</h3>
+                <div class="diagram">
+                    <svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Table boxes -->
+                        <g>
+                            <!-- Candidates -->
+                            <rect x="50" y="200" width="160" height="120" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="4"/>
+                            <text x="130" y="225" text-anchor="middle" font-weight="bold" font-size="13">Candidates</text>
+                            <line x1="50" y1="235" x2="210" y2="235" stroke="#2E86AB" stroke-width="1"/>
+                            <text x="60" y="250" font-size="10">Full Name</text>
+                            <text x="60" y="265" font-size="10">Email, Phone</text>
+                            <text x="60" y="280" font-size="10">Teaching Type</text>
+                            <text x="60" y="295" font-size="10">Pipeline Stage</text>
+                            <text x="60" y="310" font-size="10" fill="#D4A84B">✦ PK: RecID</text>
+
+                            <!-- Vacancies -->
+                            <rect x="300" y="200" width="160" height="120" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="4"/>
+                            <text x="380" y="225" text-anchor="middle" font-weight="bold" font-size="13">Vacancies</text>
+                            <line x1="300" y1="235" x2="460" y2="235" stroke="#2E86AB" stroke-width="1"/>
+                            <text x="310" y="250" font-size="10">Role Title</text>
+                            <text x="310" y="265" font-size="10">Location</text>
+                            <text x="310" y="280" font-size="10">Client (link)</text>
+                            <text x="310" y="295" font-size="10">Status</text>
+                            <text x="310" y="310" font-size="10" fill="#D4A84B">✦ PK: RecID</text>
+
+                            <!-- Clients -->
+                            <rect x="550" y="200" width="160" height="120" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="4"/>
+                            <text x="630" y="225" text-anchor="middle" font-weight="bold" font-size="13">Clients</text>
+                            <line x1="550" y1="235" x2="710" y2="235" stroke="#2E86AB" stroke-width="1"/>
+                            <text x="560" y="250" font-size="10">Organisation Name</text>
+                            <text x="560" y="265" font-size="10">Contact Info</text>
+                            <text x="560" y="280" font-size="10">Country</text>
+                            <text x="560" y="295" font-size="10">Status</text>
+                            <text x="560" y="310" font-size="10" fill="#D4A84B">✦ PK: RecID</text>
+
+                            <!-- Applications (JUNCTION) -->
+                            <rect x="275" y="420" width="160" height="140" fill="#FFF9E6" stroke="#D4A84B" stroke-width="3" rx="4"/>
+                            <text x="355" y="445" text-anchor="middle" font-weight="bold" font-size="13" fill="#D4A84B">Applications</text>
+                            <text x="355" y="460" text-anchor="middle" font-size="9" fill="#D4A84B">(JUNCTION TABLE)</text>
+                            <line x1="275" y1="470" x2="435" y2="470" stroke="#D4A84B" stroke-width="1"/>
+                            <text x="285" y="485" font-size="10">Candidate (link)</text>
+                            <text x="285" y="500" font-size="10">Vacancy (link)</text>
+                            <text x="285" y="515" font-size="10">Client (link)</text>
+                            <text x="285" y="530" font-size="10">Stage</text>
+                            <text x="285" y="545" font-size="10">Date Submitted</text>
+                            <text x="285" y="560" font-size="10" fill="#D4A84B">✦ PK: RecID</text>
+
+                            <!-- Placements -->
+                            <rect x="800" y="200" width="160" height="120" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="4"/>
+                            <text x="880" y="225" text-anchor="middle" font-weight="bold" font-size="13">Placements</text>
+                            <line x1="800" y1="235" x2="960" y2="235" stroke="#2E86AB" stroke-width="1"/>
+                            <text x="810" y="250" font-size="10">Candidate (link)</text>
+                            <text x="810" y="265" font-size="10">Client (link)</text>
+                            <text x="810" y="280" font-size="10">Start Date</text>
+                            <text x="810" y="295" font-size="10">Status</text>
+                            <text x="810" y="310" font-size="10" fill="#D4A84B">✦ PK: RecID</text>
+
+                            <!-- Interviews -->
+                            <rect x="1050" y="200" width="140" height="120" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="4"/>
+                            <text x="1120" y="225" text-anchor="middle" font-weight="bold" font-size="13">Interviews</text>
+                            <line x1="1050" y1="235" x2="1190" y2="235" stroke="#2E86AB" stroke-width="1"/>
+                            <text x="1060" y="250" font-size="10">Candidate (link)</text>
+                            <text x="1060" y="265" font-size="10">Application (link)</text>
+                            <text x="1060" y="280" font-size="10">Date/Time</text>
+                            <text x="1060" y="295" font-size="10">Outcome</text>
+                            <text x="1060" y="310" font-size="10" fill="#D4A84B">✦ PK: RecID</text>
+
+                            <!-- Support tables -->
+                            <rect x="50" y="25" width="150" height="100" fill="#F0F4F8" stroke="#6B7B8D" stroke-width="1" rx="4"/>
+                            <text x="125" y="50" text-anchor="middle" font-weight="bold" font-size="11">Teacher Submissions</text>
+                            <text x="60" y="70" font-size="9">Raw intake</text>
+                            <text x="60" y="85" font-size="9">→ Candidates</text>
+
+                            <rect x="225" y="25" width="150" height="100" fill="#F0F4F8" stroke="#6B7B8D" stroke-width="1" rx="4"/>
+                            <text x="300" y="50" text-anchor="middle" font-weight="bold" font-size="11">Documents</text>
+                            <text x="235" y="70" font-size="9">Passport, Certs,</text>
+                            <text x="235" y="85" font-size="9">References</text>
+
+                            <rect x="400" y="25" width="150" height="100" fill="#F0F4F8" stroke="#6B7B8D" stroke-width="1" rx="4"/>
+                            <text x="475" y="50" text-anchor="middle" font-weight="bold" font-size="11">Tasks</text>
+                            <text x="410" y="70" font-size="9">Follow-ups, screening,</text>
+                            <text x="410" y="85" font-size="9">compliance</text>
+
+                            <rect x="575" y="25" width="150" height="100" fill="#F0F4F8" stroke="#6B7B8D" stroke-width="1" rx="4"/>
+                            <text x="650" y="50" text-anchor="middle" font-weight="bold" font-size="11">Communication Log</text>
+                            <text x="585" y="70" font-size="9">Emails, calls,</text>
+                            <text x="585" y="85" font-size="9">messages, activity</text>
+
+                            <rect x="750" y="25" width="150" height="100" fill="#F0F4F8" stroke="#6B7B8D" stroke-width="1" rx="4"/>
+                            <text x="825" y="50" text-anchor="middle" font-weight="bold" font-size="11">Fees & Revenue</text>
+                            <text x="760" y="70" font-size="9">Invoices, payments,</text>
+                            <text x="760" y="85" font-size="9">financial tracking</text>
+
+                            <rect x="925" y="25" width="150" height="100" fill="#F0F4F8" stroke="#6B7B8D" stroke-width="1" rx="4"/>
+                            <text x="1000" y="50" text-anchor="middle" font-weight="bold" font-size="11">Recruiters</text>
+                            <text x="935" y="70" font-size="9">Team members,</text>
+                            <text x="935" y="85" font-size="9">roles, activity</text>
+                        </g>
+
+                        <!-- Relationship lines -->
+                        <g stroke="#2E86AB" stroke-width="2" fill="none">
+                            <!-- Candidates -> Applications -->
+                            <path d="M 210 250 L 275 480" stroke-dasharray="5,5"/>
+                            <!-- Vacancies -> Applications -->
+                            <path d="M 380 320 L 355 420" stroke-dasharray="5,5"/>
+                            <!-- Clients -> Applications -->
+                            <path d="M 630 320 L 435 480" stroke-dasharray="5,5"/>
+                            <!-- Applications -> Placements -->
+                            <path d="M 435 450 L 800 250" stroke-dasharray="5,5"/>
+                            <!-- Applications -> Interviews -->
+                            <path d="M 435 480 L 1050 250" stroke-dasharray="5,5"/>
+                        </g>
+                    </svg>
+                </div>
+
+                <h3>Core Tables (16 Total)</h3>
+
+                <div class="table-spec">
+                    <h4>1. Teacher Submissions (tblGoBhaRRPBJDBZo)</h4>
+                    <p><strong>Purpose:</strong> Raw intake from website forms. Auto-converts to Candidates.</p>
+                    <p><strong>Key Fields:</strong> Form submission data (name, email, CV, teaching preferences)</p>
+                    <p><strong>Relationships:</strong> → Candidates (one-to-one on creation)</p>
+                    <p><strong>Governance:</strong> Auto-processed by Make webhook. Archive after 90 days.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>2. Candidates (tblPnMsI1upneASSY)</h4>
+                    <p><strong>Purpose:</strong> Master candidate database. The single source of candidate truth.</p>
+                    <p><strong>Key Fields (40+):</strong> Full Name, Email, Phone, WhatsApp, Teaching Type, Primary/Secondary Subjects, Grade Range, Placement Preference, CV, Pipeline Stage, Consent fields (5), Notes, Date Submitted, Experience (years), Highest Qualification, LinkedIn, Desired Locations, Passport, Visa Status, GCC Eligibility, Risk Flag, Last Activity Date</p>
+                    <p><strong>AI Fields:</strong> Executive Summary, Extracted Teaching Experience, Resume Parsed status</p>
+                    <p><strong>Relationships:</strong> Links to Applications, Tasks, Interviews, Documents, Experience, Communication Log, Placements, Recruiters</p>
+                    <p><strong>Governance:</strong> Required fields by stage. Deduplication on email+phone. Audit trail on all changes.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>3. Vacancies (tblzvVLKq5AQ1rtvG)</h4>
+                    <p><strong>Purpose:</strong> Open roles from clients. Drives the supply-demand matching.</p>
+                    <p><strong>Key Fields:</strong> Role Title, Location, Type, Summary, Full Description, Responsibilities, Requirements, Subject, Grade Range, Curriculum, Start Date, Status, Date Posted, Industry, Salary/Package, Visa Sponsorship, Accommodation, Linked Client, Account Manager, Placement Fee, Priority</p>
+                    <p><strong>Relationships:</strong> Links to Clients, Applications, Tasks, Interviews, Placements</p>
+                    <p><strong>Governance:</strong> Required fields before "Active" status. Auto-archive after filled or 6 months expired.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>4. Clients & Employers (tblD6c8lsJehrwbgp)</h4>
+                    <p><strong>Purpose:</strong> All hiring organisations. Schools, international employers, hospitality chains.</p>
+                    <p><strong>Key Fields:</strong> Organisation Name, Country, City, Contact Info, Subject Needed, Grade Range, Curriculum, Start Date, Number of Positions, School Type, Status, DBE Quintile, Service Tier, Pro Bono flags, International Pipeline Flag, Industry, Fee Type, Fee Amount, Account Manager, Payment Terms, Last Activity Date</p>
+                    <p><strong>Relationships:</strong> Links to Vacancies, Applications, Placements, Tasks, Interviews, Communication Log, Fees & Revenue</p>
+                    <p><strong>Governance:</strong> Deduplicate on org name+country. Track service tier and pro bono status separately.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>5. Applications (tblHU2swkWz9xPMTR) - JUNCTION TABLE</h4>
+                    <p><strong>Purpose:</strong> Critical junction table connecting candidates to vacancies. Tracks the journey from submission to placement.</p>
+                    <p><strong>Key Fields:</strong> Application Reference, Candidate (link), Vacancy (link), Client (link), Recruiter (link), Stage (Screening/Submitted/Interview/Offer/Placed/Rejected/Withdrawn), Date Submitted, Interview Date, Offer Status, Rejection Reason, Notes, Created Date, Last Updated</p>
+                    <p><strong>Relationships:</strong> Links to Candidates, Vacancies, Clients, Recruiters, Interviews, Placements</p>
+                    <p><strong>Governance:</strong> Immutable audit trail. Every stage change logged with timestamp. Can't delete, only mark withdrawn.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>6. Placements (tbljCoyaDjtzUKKLm)</h4>
+                    <p><strong>Purpose:</strong> Successful placements. Links to invoicing and revenue tracking.</p>
+                    <p><strong>Key Fields:</strong> Placement Name, Candidate (link), Client (link), Role, Start Date, Status, Notes, Date Placed, Placement Fee (USD), Fee Type, Fee Paid, Industry, Pro Bono flag, Recruiter (link), Guarantee End Date, Vacancy (link), Application (link)</p>
+                    <p><strong>Relationships:</strong> Links to Candidates, Clients, Applications, Vacancies, Recruiters, Fees & Revenue</p>
+                    <p><strong>Governance:</strong> Created from Application when status = "Placed". Immutable after 30 days.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>7. Interviews (tbl7SXbehX3aJbjES)</h4>
+                    <p><strong>Purpose:</strong> Track candidate interviews. Links application progress to interview feedback.</p>
+                    <p><strong>Key Fields:</strong> Interview Reference, Candidate (link), Vacancy (link), Client (link), Application (link), Interview Stage, Date/Time, Interviewer, Feedback, Outcome, Recruiter (link)</p>
+                    <p><strong>Relationships:</strong> Links to Candidates, Vacancies, Clients, Applications, Recruiters</p>
+                    <p><strong>Governance:</strong> Auto-created when Application stage = "Interview". Immutable after completion.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>8. Tasks (tblHth6x2QnFZVpEZ)</h4>
+                    <p><strong>Purpose:</strong> Workflow management. Drives recruiter activity and follow-up discipline.</p>
+                    <p><strong>Key Fields:</strong> Title, Owner (link to Recruiters), Linked Candidate, Linked Vacancy, Linked Client, Due Date, Priority (High/Medium/Low), Status (Open/Completed/Overdue), Task Type (Follow-up/Screen Candidate/Document Chase/Interview Prep/Client Update/Resume Review/Reference Check/Compliance/Other), Notes, Completed Date</p>
+                    <p><strong>Relationships:</strong> Links to Recruiters, Candidates, Vacancies, Clients</p>
+                    <p><strong>Governance:</strong> Auto-created by triggers. Assignee accountability tracked via Due Date and Completed Date.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>9. Candidate Documents (tblHbI1ZlTGW6MZ0t)</h4>
+                    <p><strong>Purpose:</strong> Document verification and compliance tracking.</p>
+                    <p><strong>Key Fields:</strong> Document Name, Candidate (link), Document Type (Passport/National ID/Degree/Teaching Certificate/CV/Police Clearance/Medical/Reference/Visa/Work Permit/SACE/Other), File, Expiry Date, Verified, Missing flag, Verified By (link to Recruiters), Verification Date, Notes</p>
+                    <p><strong>Relationships:</strong> Links to Candidates, Recruiters</p>
+                    <p><strong>Governance:</strong> Compliance checks. Alert when expiry date within 30 days.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>10. Candidate Experience (tblxbDevO0PY19Wzv)</h4>
+                    <p><strong>Purpose:</strong> Work history extracted from CV or self-reported.</p>
+                    <p><strong>Key Fields:</strong> Experience Entry, Candidate (link), Employer, Role Title, Country, City, Start Date, End Date, Current Role flag, Description, Reason for Leaving, Industry</p>
+                    <p><strong>Relationships:</strong> Links to Candidates</p>
+                    <p><strong>Governance:</strong> Auto-populated by resume parser. Editable by recruiter.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>11. Communication Log (tbl7vQH6McfufblE9)</h4>
+                    <p><strong>Purpose:</strong> Complete communication trail. CRM backbone.</p>
+                    <p><strong>Key Fields:</strong> Summary, Type (Email/WhatsApp/Phone Call/In-Person/LinkedIn/Other), Linked Candidate, Linked Client, Date, Direction (Inbound/Outbound), Owner (link to Recruiters), Detail, Follow-up Required flag, Follow-up Date</p>
+                    <p><strong>Relationships:</strong> Links to Candidates, Clients, Recruiters</p>
+                    <p><strong>Governance:</strong> All communications auto-logged. Immutable. Critical for compliance and dispute resolution.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>12. Recruiters (tblA47YKd73wIwseA)</h4>
+                    <p><strong>Purpose:</strong> Team member roster and permissions.</p>
+                    <p><strong>Key Fields:</strong> Full Name, Email, Phone, Role (Admin/Director/Recruiter/Sourcer/Compliance/Finance), Status (Active/Inactive), User Account (Airtable collaborator), Start Date, Notes</p>
+                    <p><strong>Relationships:</strong> Reverse links from Candidates, Vacancies, Clients, Applications, Tasks, Interviews, Documents, Communication Log, Placements, Fees & Revenue</p>
+                    <p><strong>Governance:</strong> Single source for team structure and access control.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>13-16. Support Tables</h4>
+                    <p><strong>Contacts (tbljo14y1gTNWbbKO):</strong> General enquiries and leads. Auto-ingestion point.</p>
+                    <p><strong>Vacancy Alerts (tblMhdAgHZB4fiLgr):</strong> Email notification subscribers. Automated digest triggers.</p>
+                    <p><strong>WCED School Pipeline (tblIuXKs5Mgzq3hd9):</strong> Outbound lead generation for South African schools.</p>
+                    <p><strong>Fees & Revenue (tblOp40e8ApV6IeL4):</strong> Financial tracking. Fields: Fee Reference, Amount (USD), Fee Type, Industry, Invoice Date, Due Date, Paid Date, Payment Status, Notes, Client (link), Placement (link), Recruiter (link)</p>
+                </div>
+
+                <h3>Data Flow Architecture</h3>
+                <p style="margin: 1rem 0;">The primary data flow moves through these stages in sequence:</p>
+                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 6px; border-left: 4px solid var(--blue); margin: 1rem 0;">
+                    <p><strong>1. Candidate Entry:</strong> Teacher Submissions → Candidates table</p>
+                    <p><strong>2. Matching:</strong> Candidates + Vacancies → Applications (junction)</p>
+                    <p><strong>3. Evaluation:</strong> Applications → Interviews</p>
+                    <p><strong>4. Conversion:</strong> Applications (stage=Placed) → Placements</p>
+                    <p><strong>5. Revenue:</strong> Placements → Fees & Revenue (invoicing)</p>
+                    <p><strong>6. Communication:</strong> All interactions logged to Communication Log</p>
+                    <p><strong>7. Tasks:</strong> Auto-created for follow-ups, document chasing, compliance</p>
+                </div>
+            </section>
+
+            <!-- SECTION 3: RELATIONSHIPS -->
+            <section id="relationships" class="section">
+                <h2>🔗 Relationship Map</h2>
+
+                <h3>Table Relationships & Key Connections</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>From Table</th>
+                            <th>To Table</th>
+                            <th>Relationship Type</th>
+                            <th>Cardinality</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Candidates</td>
+                            <td>Applications</td>
+                            <td>Lookup</td>
+                            <td>1:N</td>
+                            <td>One candidate can apply to multiple vacancies</td>
+                        </tr>
+                        <tr>
+                            <td>Vacancies</td>
+                            <td>Applications</td>
+                            <td>Lookup</td>
+                            <td>1:N</td>
+                            <td>One vacancy receives multiple applications</td>
+                        </tr>
+                        <tr>
+                            <td>Clients</td>
+                            <td>Vacancies</td>
+                            <td>Lookup</td>
+                            <td>1:N</td>
+                            <td>One client has multiple open roles</td>
+                        </tr>
+                        <tr>
+                            <td>Applications</td>
+                            <td>Placements</td>
+                            <td>Lookup</td>
+                            <td>1:1</td>
+                            <td>One successful application = one placement</td>
+                        </tr>
+                        <tr>
+                            <td>Applications</td>
+                            <td>Interviews</td>
+                            <td>Lookup</td>
+                            <td>1:N</td>
+                            <td>One application may have multiple interview rounds</td>
+                        </tr>
+                        <tr>
+                            <td>Placements</td>
+                            <td>Fees & Revenue</td>
+                            <td>Lookup</td>
+                            <td>1:1</td>
+                            <td>Each placement triggers one invoice</td>
+                        </tr>
+                        <tr>
+                            <td>Candidates</td>
+                            <td>Documents</td>
+                            <td>Lookup</td>
+                            <td>1:N</td>
+                            <td>Candidate has passport, certificates, etc.</td>
+                        </tr>
+                        <tr>
+                            <td>Candidates</td>
+                            <td>Experience</td>
+                            <td>Lookup</td>
+                            <td>1:N</td>
+                            <td>Candidate has multiple work history entries</td>
+                        </tr>
+                        <tr>
+                            <td>Recruiters</td>
+                            <td>All Tables</td>
+                            <td>Lookup</td>
+                            <td>1:N</td>
+                            <td>Team members own tasks, conduct interviews, verify docs</td>
+                        </tr>
+                        <tr>
+                            <td>Any Table</td>
+                            <td>Communication Log</td>
+                            <td>Lookup</td>
+                            <td>1:N</td>
+                            <td>All interactions logged and traceable</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Junction Table: Applications</h3>
+                <div style="background: #FFF9E6; padding: 1.5rem; border-radius: 8px; border: 2px solid var(--gold); margin: 1.5rem 0;">
+                    <h4 style="color: var(--navy); margin-bottom: 1rem;">Why Applications is Critical</h4>
+                    <p style="margin-bottom: 1rem;">Applications is a junction table that resolves the many-to-many relationship between Candidates and Vacancies. Without it:</p>
+                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                        <li>We couldn't track that candidate A applied to vacancy B on date X</li>
+                        <li>We couldn't see all candidates who applied for one role</li>
+                        <li>We couldn't manage multiple rounds of the same person for the same role</li>
+                        <li>We couldn't track stage progression (Screening → Submitted → Interview → Offer → Placed)</li>
+                    </ul>
+                    <p><strong>Applications stores the state of each candidate-vacancy pairing and drives all subsequent workflows.</strong></p>
+                </div>
+
+                <h3>Lookup & Rollup Dependencies</h3>
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    <span><strong>Candidates Table Rollups</strong></span>
+                    <span>▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field Name</th>
+                                <th>Formula</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Applications</td>
+                                <td>COUNTA(Applications)</td>
+                                <td>Count of all applications this candidate submitted</td>
+                            </tr>
+                            <tr>
+                                <td>Active Applications</td>
+                                <td>COUNTIF(Applications.Stage, NOT "Rejected", NOT "Withdrawn")</td>
+                                <td>Pending applications in pipeline</td>
+                            </tr>
+                            <tr>
+                                <td>Placements Count</td>
+                                <td>COUNTA(Placements)</td>
+                                <td>Number of successful placements</td>
+                            </tr>
+                            <tr>
+                                <td>Last Interaction</td>
+                                <td>MAX(Communication Log.Date)</td>
+                                <td>Most recent contact date</td>
+                            </tr>
+                            <tr>
+                                <td>Documents Status</td>
+                                <td>IF(COUNTA(Documents) = COUNTIF(Documents.Verified, TRUE), "Complete", "Incomplete")</td>
+                                <td>All required documents verified?</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    <span><strong>Vacancies Table Rollups</strong></span>
+                    <span>▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field Name</th>
+                                <th>Formula</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Applications</td>
+                                <td>COUNTA(Applications)</td>
+                                <td>How many candidates applied</td>
+                            </tr>
+                            <tr>
+                                <td>Interview Count</td>
+                                <td>COUNTA(Interviews)</td>
+                                <td>Number of interviews scheduled</td>
+                            </tr>
+                            <tr>
+                                <td>Screening Queue</td>
+                                <td>COUNTIF(Applications.Stage, "Screening")</td>
+                                <td>Pending screening applications</td>
+                            </tr>
+                            <tr>
+                                <td>Days Open</td>
+                                <td>DATETIME_DIFF(TODAY(), {Date Posted}, "days")</td>
+                                <td>How long vacancy has been open</td>
+                            </tr>
+                            <tr>
+                                <td>Fill Status</td>
+                                <td>IF(Status = "Filled", "CLOSED", IF(COUNTIF(Applications.Stage, "Placed") > 0, "Pending Fill", "Open"))</td>
+                                <td>Current fill status</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    <span><strong>Clients Table Rollups</strong></span>
+                    <span>▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field Name</th>
+                                <th>Formula</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Open Vacancies</td>
+                                <td>COUNTIF(Vacancies.Status, "Active")</td>
+                                <td>Current open roles</td>
+                            </tr>
+                            <tr>
+                                <td>Total Placements</td>
+                                <td>COUNTA(Placements)</td>
+                                <td>Lifetime placements with this client</td>
+                            </tr>
+                            <tr>
+                                <td>Revenue (YTD)</td>
+                                <td>SUMIF(Fees.Date, >= START_OF_YEAR(), Fees.Amount)</td>
+                                <td>Year-to-date revenue from client</td>
+                            </tr>
+                            <tr>
+                                <td>Pipeline Stage</td>
+                                <td>IF(COUNTIF(Vacancies, TRUE) > 0, "Active", IF(COUNTIF(Placements, TRUE) > 0, "Inactive", "Prospect"))</td>
+                                <td>Client relationship status</td>
+                            </tr>
+                            <tr>
+                                <td>Last Activity</td>
+                                <td>MAX(Communication Log.Date)</td>
+                                <td>Most recent interaction</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Primary & Foreign Keys</h3>
+                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 6px; border-left: 4px solid var(--blue);">
+                    <p><strong>Primary Keys (Record IDs):</strong> Every Airtable record has an auto-generated RecID that uniquely identifies it. This is the primary key for every table.</p>
+                    <p style="margin-top: 1rem;"><strong>Foreign Keys (Links):</strong> When one table references another, it uses a "Link to another record" field. This creates the relationship. For example:</p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>Applications.Candidate → RecID of Candidates record</li>
+                        <li>Applications.Vacancy → RecID of Vacancies record</li>
+                        <li>Placements.Candidate → RecID of Candidates record</li>
+                        <li>Interviews.Application → RecID of Applications record</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Reverse Links:</strong> When you create a link from Table A to Table B, Airtable automatically creates a reverse link in Table B back to Table A. This enables bi-directional queries and rollups.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 4: LIFECYCLE FLOW -->
+            <section id="lifecycle" class="section">
+                <h2>🔄 End-to-End Lifecycle</h2>
+
+                <h3>The 10-Stage Candidate Journey</h3>
+                <div class="lifecycle-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h4>Application Intake</h4>
+                        <p><strong>Triggers:</strong> Website form OR email resume</p>
+                        <p><strong>Tables:</strong> Teacher Submissions → Candidates</p>
+                        <p><strong>Automations:</strong> Create candidate record, send confirmation</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h4>CV Processing</h4>
+                        <p><strong>Triggers:</strong> CV uploaded</p>
+                        <p><strong>Tables:</strong> Candidate Documents, Candidate Experience</p>
+                        <p><strong>Automations:</strong> Parse CV, extract experience, generate AI summary</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h4>Qualification Review</h4>
+                        <p><strong>Triggers:</strong> Manual review by Recruiter</p>
+                        <p><strong>Tables:</strong> Candidates (update Pipeline Stage)</p>
+                        <p><strong>Automations:</strong> Flag risk items, create compliance tasks</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h4>Matching & Application</h4>
+                        <p><strong>Triggers:</strong> Candidate approved OR vacancy matches profile</p>
+                        <p><strong>Tables:</strong> Applications (new record)</p>
+                        <p><strong>Automations:</strong> Create application, notify recruiter, log communication</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <h4>Screening</h4>
+                        <p><strong>Triggers:</strong> Application stage = Screening</p>
+                        <p><strong>Tables:</strong> Tasks (create "Screen Candidate"), Communication Log</p>
+                        <p><strong>Automations:</strong> Assign screener, set due date, send prep materials</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <h4>Interview Scheduling</h4>
+                        <p><strong>Triggers:</strong> Application stage = Interview</p>
+                        <p><strong>Tables:</strong> Interviews (create record), Tasks (update)</p>
+                        <p><strong>Automations:</strong> Send calendar invite, notify client, prepare interview kit</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <h4>Interview Completion</h4>
+                        <p><strong>Triggers:</strong> Interview record completed</p>
+                        <p><strong>Tables:</strong> Interviews (feedback logged), Applications (stage update)</p>
+                        <p><strong>Automations:</strong> Log feedback, update candidate status, create follow-up task</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <h4>Offer & Negotiation</h4>
+                        <p><strong>Triggers:</strong> Application stage = Offer</p>
+                        <p><strong>Tables:</strong> Applications (offer_status field), Communication Log</p>
+                        <p><strong>Automations:</strong> Generate offer letter, send to client, track response</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">9</div>
+                        <h4>Placement & Onboarding</h4>
+                        <p><strong>Triggers:</strong> Application stage = Placed</p>
+                        <p><strong>Tables:</strong> Placements (new), Tasks (onboarding checklist)</p>
+                        <p><strong>Automations:</strong> Create placement record, trigger invoicing, onboarding emails</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">10</div>
+                        <h4>Revenue Tracking</h4>
+                        <p><strong>Triggers:</strong> Placement created</p>
+                        <p><strong>Tables:</strong> Fees & Revenue (new), Communication Log</p>
+                        <p><strong>Automations:</strong> Generate invoice, track payment, close case</p>
+                    </div>
+                </div>
+
+                <h3>State Transitions & Validations</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>From Stage</th>
+                            <th>To Stage</th>
+                            <th>Requirements</th>
+                            <th>Automations Triggered</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>New Applicant</td>
+                            <td>Screening</td>
+                            <td>CV uploaded, basic info complete</td>
+                            <td>Assign screener, create task, send confirmation</td>
+                        </tr>
+                        <tr>
+                            <td>Screening</td>
+                            <td>Submitted to Client</td>
+                            <td>CV reviewed, no risk flags, documents verified</td>
+                            <td>Generate submission package, send to client, log communication</td>
+                        </tr>
+                        <tr>
+                            <td>Submitted to Client</td>
+                            <td>Interview</td>
+                            <td>Client approval, interview date set</td>
+                            <td>Create interview record, send calendar invite, prep materials</td>
+                        </tr>
+                        <tr>
+                            <td>Interview</td>
+                            <td>Offer Stage</td>
+                            <td>Positive interview feedback, client approval</td>
+                            <td>Generate offer letter, send to all parties, track deadline</td>
+                        </tr>
+                        <tr>
+                            <td>Offer Stage</td>
+                            <td>Placed</td>
+                            <td>Candidate acceptance, start date confirmed, contract signed</td>
+                            <td>Create placement, trigger invoicing, onboarding sequence</td>
+                        </tr>
+                        <tr>
+                            <td>Any Stage</td>
+                            <td>Rejected</td>
+                            <td>Rejection reason documented</td>
+                            <td>Log reason, archive application, create follow-up task</td>
+                        </tr>
+                        <tr>
+                            <td>Any Stage</td>
+                            <td>On Hold</td>
+                            <td>Hold reason and duration</td>
+                            <td>Pause automations, set re-evaluation date</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Parallel Workflows</h3>
+                <p style="margin: 1rem 0;"><strong>While the candidate is in the pipeline, these parallel workflows run independently:</strong></p>
+                
+                <div class="table-spec">
+                    <h4>Document Verification Workflow</h4>
+                    <p>Compliance checks run continuously. When documents are uploaded: verify each document type, check expiry dates, flag missing docs, create tasks for verification, send reminders for expiring documents (30-day warning).</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Communication Tracking Workflow</h4>
+                    <p>Every interaction is logged automatically or manually to Communication Log. Daily digest sent to recruiter of follow-ups needed. WhatsApp notifications sent at key milestones (application received, interview scheduled, offer sent).</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Task Management Workflow</h4>
+                    <p>Tasks auto-created at each stage. Overdue tasks flagged daily. Priority tasks escalated. Owner accountability tracked. Completion logged with timestamp.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Financial Tracking Workflow</h4>
+                    <p>Once application moves to "Placed" stage: Create invoice, set due date based on fee type, track payment status, issue reminder emails on due date, close when paid.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 5: INTERFACES -->
+            <section id="interfaces" class="section">
+                <h2>💻 Dashboard Specifications</h2>
+
+                <h3>1. Recruiter Dashboard</h3>
+                <div class="card">
+                    <h4>Purpose</h4>
+                    <p>Daily work hub for managing candidates, applications, and follow-ups.</p>
+                    <h4 style="margin-top: 1rem;">Layout Zones</h4>
+                    <p><strong>Top Bar (KPIs):</strong> Tasks due today, overdue tasks, new applications, interviews this week</p>
+                    <p><strong>Left Sidebar:</strong> My Candidates (searchable list), My Vacancies, My Tasks, My Clients</p>
+                    <p><strong>Main Content:</strong> Detailed view of selected candidate or application with full history</p>
+                    <p><strong>Right Sidebar:</strong> Quick actions (Email, WhatsApp, SMS), Recent communications, Document status</p>
+                    <h4 style="margin-top: 1rem;">Key Views</h4>
+                    <p>Applications Queue (by stage), Task List (by due date), Candidate Pipeline (by status), Interview Schedule (by date), Recent Activity</p>
+                    <h4 style="margin-top: 1rem;">Filters</h4>
+                    <p>By recruiter, by vacancy, by client, by stage, by date range, by priority</p>
+                    <h4 style="margin-top: 1rem;">Data Sources</h4>
+                    <p>Candidates, Applications, Tasks, Interviews, Communication Log, Placements</p>
+                </div>
+
+                <h3>2. Client Dashboard</h3>
+                <div class="card">
+                    <h4>Purpose</h4>
+                    <p>Portal for clients to track their open roles and submitted candidates.</p>
+                    <h4 style="margin-top: 1rem;">Layout</h4>
+                    <p><strong>Header:</strong> Client name, account manager, contact info</p>
+                    <p><strong>Main Content:</strong> Open vacancies (cards), submitted candidates (list), interview schedule, communication thread</p>
+                    <p><strong>Right Panel:</strong> Quick stats (total placements, active roles, pending interviews)</p>
+                    <h4 style="margin-top: 1rem;">Key Views</h4>
+                    <p>Active Vacancies (with application counts), Candidate Pipeline (submitted/interviewed/offered/placed), Interview Calendar, Communication History</p>
+                    <h4 style="margin-top: 1rem;">Filters</h4>
+                    <p>By vacancy, by status, by date submitted</p>
+                    <h4 style="margin-top: 1rem;">Data Sources</h4>
+                    <p>Vacancies, Applications (linked to client), Interviews, Placements, Communication Log</p>
+                </div>
+
+                <h3>3. Executive Dashboard</h3>
+                <div class="card">
+                    <h4>Purpose</h4>
+                    <p>High-level business metrics for leadership and strategic planning.</p>
+                    <h4 style="margin-top: 1rem;">Key Metrics (Top Row)</h4>
+                    <p>Total Placements (YTD), Total Revenue (USD), Active Candidates, Open Vacancies, Placement Rate (%), Average Fee</p>
+                    <h4 style="margin-top: 1rem;">Charts & Visualizations</h4>
+                    <p>Placements by month (trend), Revenue by client (pie), Placements by industry (bar), Conversion funnel (application → placed)</p>
+                    <h4 style="margin-top: 1rem;">Leaderboard</h4>
+                    <p>Top recruiters (by placements), Top clients (by revenue), Top sources (by conversions)</p>
+                    <h4 style="margin-top: 1rem;">Pipeline Health</h4>
+                    <p>Applications in each stage (waterfall), interviews scheduled, offers pending, risk flags</p>
+                    <h4 style="margin-top: 1rem;">Data Sources</h4>
+                    <p>Placements, Fees & Revenue, Applications, Interviews, Candidates, Vacancies</p>
+                </div>
+
+                <h3>4. Compliance Dashboard</h3>
+                <div class="card">
+                    <h4>Purpose</h4>
+                    <p>Risk management and regulatory compliance tracking.</p>
+                    <h4 style="margin-top: 1rem;">Key Sections</h4>
+                    <p><strong>Expiring Documents:</strong> All documents expiring within 30 days. Filters by document type, candidate, status.</p>
+                    <p><strong>Risk Flags:</strong> Candidates flagged with risk items. By risk type (visa, qualification, reference, medical).</p>
+                    <p><strong>Verification Status:</strong> Compliance checklist per candidate. Documents verified, references checked, background cleared.</p>
+                    <p><strong>Missing Documents:</strong> Candidates with incomplete documentation. Priority by placement stage.</p>
+                    <h4 style="margin-top: 1rem;">Data Sources</h4>
+                    <p>Candidate Documents, Candidates (risk flag field), Communication Log</p>
+                </div>
+
+                <h3>5. Finance Dashboard</h3>
+                <div class="card">
+                    <h4>Purpose</h4>
+                    <p>Invoice management, payment tracking, and revenue forecasting.</p>
+                    <h4 style="margin-top: 1rem;">Key Sections</h4>
+                    <p><strong>Outstanding Invoices:</strong> All unpaid invoices. Sorted by due date, amount, client. Includes aging (0-30, 30-60, 60+).</p>
+                    <p><strong>Paid Invoices:</strong> Monthly revenue tracking. Compared to forecast and previous year.</p>
+                    <p><strong>Fee Types:</strong> Revenue breakdown by fee type (upfront, on-placement, monthly retainer).</p>
+                    <p><strong>Client Accounts:</strong> A/R by client. Payment terms, historical compliance.</p>
+                    <p><strong>Cash Flow Forecast:</strong> Projected revenue based on placement pipeline.</p>
+                    <h4 style="margin-top: 1rem;">Data Sources</h4>
+                    <p>Fees & Revenue, Placements, Clients</p>
+                </div>
+            </section>
+
+            <!-- SECTION 6: ROLES & PERMISSIONS -->
+            <section id="roles" class="section">
+                <h2>👥 Roles & Permissions</h2>
+
+                <h3>Role Definitions</h3>
+                <div class="architecture-grid">
+                    <div class="card">
+                        <h4>Admin</h4>
+                        <p><strong>Responsibility:</strong> Full system access. Database management, user management, integrations.</p>
+                        <p><strong>Access:</strong> All tables, all records, all views</p>
+                        <p><strong>Team Size:</strong> 1-2 people</p>
+                    </div>
+                    <div class="card">
+                        <h4>Director</h4>
+                        <p><strong>Responsibility:</strong> Strategic oversight, reporting, team management.</p>
+                        <p><strong>Access:</strong> All tables (read), edit Clients, Vacancies, Recruiters</p>
+                        <p><strong>Team Size:</strong> 1-2 people</p>
+                    </div>
+                    <div class="card">
+                        <h4>Recruiter</h4>
+                        <p><strong>Responsibility:</strong> Manage candidate pipeline, conduct interviews, close placements.</p>
+                        <p><strong>Access:</strong> Candidates, Applications, Interviews, Tasks (assigned to self), Communication Log</p>
+                        <p><strong>Team Size:</strong> 3-10 people</p>
+                    </div>
+                    <div class="card">
+                        <h4>Sourcer</h4>
+                        <p><strong>Responsibility:</strong> Find and qualify candidates. Light pipeline management.</p>
+                        <p><strong>Access:</strong> Candidates (create/edit own), read Applications, read Vacancies</p>
+                        <p><strong>Team Size:</strong> 1-3 people</p>
+                    </div>
+                    <div class="card">
+                        <h4>Compliance</h4>
+                        <p><strong>Responsibility:</strong> Document verification, compliance checks, risk management.</p>
+                        <p><strong>Access:</strong> Candidates, Documents, Communication Log, Compliance Dashboard</p>
+                        <p><strong>Team Size:</strong> 1 person</p>
+                    </div>
+                    <div class="card">
+                        <h4>Finance</h4>
+                        <p><strong>Responsibility:</strong> Invoicing, payment tracking, revenue reporting.</p>
+                        <p><strong>Access:</strong> Fees & Revenue, Placements (read), Clients (read), Finance Dashboard</p>
+                        <p><strong>Team Size:</strong> 1 person</p>
+                    </div>
+                </div>
+
+                <h3>Table-Level Access Matrix</h3>
+                <div class="permission-matrix">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Table</th>
+                                <th>Admin</th>
+                                <th>Director</th>
+                                <th>Recruiter</th>
+                                <th>Sourcer</th>
+                                <th>Compliance</th>
+                                <th>Finance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Candidates</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R/W*</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-cross">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vacancies</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Clients</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-check">R</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Applications</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-cross">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Placements</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Interviews</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tasks</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R/W**</td>
+                                <td class="permission-check">R/W**</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Documents</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-cross">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Communication Log</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-cross">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fees & Revenue</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-check">R/W</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Recruiters</strong></td>
+                                <td class="permission-check">R/W</td>
+                                <td class="permission-check">R</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                                <td class="permission-cross">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size: 0.9rem; margin-top: 1rem; color: var(--gray);">*Sourcer can create/edit own candidates only. **Tasks can only edit tasks assigned to self.</p>
+                </div>
+
+                <h3>Record-Level Permissions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Rule</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Recruiter views candidate</td>
+                            <td>Can see all candidates, but can only edit fields in their own applications/tasks</td>
+                        </tr>
+                        <tr>
+                            <td>Recruiter views tasks</td>
+                            <td>Can see all tasks, but can only complete/edit tasks assigned to them</td>
+                        </tr>
+                        <tr>
+                            <td>Sourcer creates candidate</td>
+                            <td>Candidate is created and visible to all. Sourcer can edit their own created records.</td>
+                        </tr>
+                        <tr>
+                            <td>Compliance verifies document</td>
+                            <td>Updates "Verified" field and "Verified By" field. Immutable once verified.</td>
+                        </tr>
+                        <tr>
+                            <td>Finance marks invoice paid</td>
+                            <td>Updates payment status and date. Can view all invoices but only edit own entries.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- SECTION 7: DATA GOVERNANCE -->
+            <section id="governance" class="section">
+                <h2>📋 Data Governance</h2>
+
+                <h3>Deduplication Rules</h3>
+                <div class="table-spec">
+                    <h4>Candidate Deduplication</h4>
+                    <p><strong>Primary Match:</strong> Email address (case-insensitive)</p>
+                    <p><strong>Secondary Match:</strong> Phone number OR (First Name + Last Name + DOB)</p>
+                    <p><strong>Action:</strong> System alerts on submission if match found. Recruiter manually reviews and merges if duplicate.</p>
+                    <p><strong>Merge Process:</strong> Keep most recent data. Link all applications to primary record. Archive secondary record.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Vacancy Deduplication</h4>
+                    <p><strong>Primary Match:</strong> Client + Role Title + Location</p>
+                    <p><strong>Action:</strong> System alerts if exact match found for same client. Prevents duplicate postings.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Client Deduplication</h4>
+                    <p><strong>Primary Match:</strong> Organization Name (phonetic) + Country</p>
+                    <p><strong>Action:</strong> System alerts if similar names found in same country. Manual review required.</p>
+                </div>
+
+                <h3>Required Fields by Pipeline Stage</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Required Fields</th>
+                            <th>Validation Rule</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>New Applicant</strong></td>
+                            <td>Full Name, Email, Phone, Teaching Type</td>
+                            <td>Email must be valid format. Phone must be 10+ digits.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Screening</strong></td>
+                            <td>+ CV uploaded, Highest Qualification</td>
+                            <td>CV must be PDF/DOC. File size < 10MB.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Interviewed</strong></td>
+                            <td>+ Interview Date, Interviewer, Outcome</td>
+                            <td>Interview date must be in past. Outcome must be selected.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Submitted to Client</strong></td>
+                            <td>+ Vacancy linked, Client linked, Submission Date</td>
+                            <td>Vacancy must be active. Client must have open positions.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Offer Stage</strong></td>
+                            <td>+ Offer Status, Offer Details</td>
+                            <td>Offer status = Pending, Accepted, or Rejected.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Placed</strong></td>
+                            <td>+ Start Date, Placement Fee, Recruiter</td>
+                            <td>Start date >= today. Fee > 0. Recruiter assigned.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Audit Trail & Compliance</h3>
+                <div class="table-spec">
+                    <h4>What Gets Logged</h4>
+                    <p>Every change to core fields (Pipeline Stage, Offer Status, Documents Verified) is logged with: Changed By (user), Changed At (timestamp), Previous Value, New Value.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Retention Policy</h4>
+                    <p><strong>Active Records:</strong> Keep indefinitely. Active = current candidate or candidate with active application within 12 months.</p>
+                    <p><strong>Inactive Records:</strong> Archive after 24 months of inactivity. Move to archive table but retain for compliance.</p>
+                    <p><strong>Teacher Submissions:</strong> Auto-delete after 90 days once converted to Candidate. Or delete on demand after 12 months if not converted.</p>
+                    <p><strong>Communication Log:</strong> Keep all entries. Searchable archive for 7 years for legal compliance.</p>
+                </div>
+
+                <h3>Naming Conventions</h3>
+                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 6px; border-left: 4px solid var(--blue);">
+                    <p><strong>Candidate Names:</strong> First Last (no special characters except hyphen/apostrophe). Standardize to Title Case.</p>
+                    <p style="margin-top: 1rem;"><strong>Vacancy Titles:</strong> Use standard job titles (e.g., "Primary Teacher - Grade 3", not "Gr3 Tchr"). Include subject and grade when applicable.</p>
+                    <p style="margin-top: 1rem;"><strong>Client Names:</strong> Official organization name. Include "School", "International", etc. for clarity. No acronyms unless universally known.</p>
+                    <p style="margin-top: 1rem;"><strong>Task Titles:</strong> Action-verb format. "Screen CV for grade 5 position" not "screening". Use consistent verbs (Screen, Prepare, Contact, Verify, etc.).</p>
+                    <p style="margin-top: 1rem;"><strong>Field Names:</strong> PascalCase for record names. snake_case for internal field IDs. Clear, singular nouns.</p>
+                    <p style="margin-top: 1rem;"><strong>Application References:</strong> Auto-generated: "APP-[Year][Month]-[Candidate Initials]-[Vacancy ID]" e.g., "APP-202604-JDM-VAC001"</p>
+                </div>
+
+                <h3>Data Quality Standards</h3>
+                <p style="margin: 1rem 0; font-weight: bold;">Every record must pass these checks to move forward in the pipeline:</p>
+                <ul style="margin-left: 2rem;">
+                    <li>No blank required fields for current stage</li>
+                    <li>Email addresses are valid and unique (no duplicates)</li>
+                    <li>Phone numbers are formatted consistently</li>
+                    <li>Dates are in past (except future start dates)</li>
+                    <li>Currency amounts are positive numbers</li>
+                    <li>Links point to existing records</li>
+                    <li>Risk flags are documented with reason</li>
+                    <li>Status fields match allowed values</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 8: RESUME ENGINE -->
+            <section id="resume" class="section">
+                <h2>🤖 Resume Parser Architecture</h2>
+
+                <h3>Parser Overview</h3>
+                <p style="margin: 1rem 0;">The Resume Engine automatically extracts key information from uploaded CVs, populates candidate fields, and enables intelligent matching with vacancies.</p>
+
+                <h3>3 Format Types</h3>
+                <div class="architecture-grid">
+                    <div class="card">
+                        <h4>GCC Format</h4>
+                        <p>For Middle East roles (UAE, Saudi, Qatar). Extraction focus: Work visa eligibility, passport status, Islamic qualification recognition (Al Azhar, etc.)</p>
+                        <div class="badge secondary">Middle East</div>
+                    </div>
+                    <div class="card">
+                        <h4>USA Format</h4>
+                        <p>For North America roles. Extraction focus: State teaching licenses, US degree recognition, work authorization status, SAT/ACT experience</p>
+                        <div class="badge secondary">North America</div>
+                    </div>
+                    <div class="card">
+                        <h4>Global Format</h4>
+                        <p>For all other regions (UK, Canada, Australia, SA). Extraction focus: English-medium qualifications, international curriculum experience, teaching certifications</p>
+                        <div class="badge secondary">International</div>
+                    </div>
+                </div>
+
+                <h3>Parsing Workflow</h3>
+                <div class="diagram">
+                    <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Step 1: Upload -->
+                        <rect x="20" y="150" width="120" height="80" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="6"/>
+                        <text x="80" y="180" text-anchor="middle" font-weight="bold">Upload CV</text>
+                        <text x="80" y="200" text-anchor="middle" font-size="12">.PDF/.DOC/.DOCX</text>
+
+                        <!-- Step 2: Detect Format -->
+                        <path d="M 140 190 L 180 190" stroke="#2E86AB" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <rect x="180" y="150" width="120" height="80" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="6"/>
+                        <text x="240" y="175" text-anchor="middle" font-weight="bold">Detect Format</text>
+                        <text x="240" y="195" text-anchor="middle" font-size="12">GCC/USA/Global</text>
+
+                        <!-- Step 3: Extract Data -->
+                        <path d="M 300 190 L 340 190" stroke="#2E86AB" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <rect x="340" y="150" width="120" height="80" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="6"/>
+                        <text x="400" y="170" text-anchor="middle" font-weight="bold">Extract Data</text>
+                        <text x="400" y="190" text-anchor="middle" font-size="12">Experience, Skills,</text>
+                        <text x="400" y="205" text-anchor="middle" font-size="12">Education</text>
+
+                        <!-- Step 4: Validate & Flag -->
+                        <path d="M 460 190 L 500 190" stroke="#2E86AB" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <rect x="500" y="150" width="120" height="80" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="6"/>
+                        <text x="560" y="170" text-anchor="middle" font-weight="bold">Validate &</text>
+                        <text x="560" y="190" text-anchor="middle" font-weight="bold">Flag Issues</text>
+                        <text x="560" y="205" text-anchor="middle" font-size="12">Risk detection</text>
+
+                        <!-- Step 5: Create Summary -->
+                        <path d="M 620 190 L 660 190" stroke="#2E86AB" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <rect x="660" y="150" width="120" height="80" fill="#E3F2FD" stroke="#2E86AB" stroke-width="2" rx="6"/>
+                        <text x="720" y="170" text-anchor="middle" font-weight="bold">AI Summary</text>
+                        <text x="720" y="190" text-anchor="middle" font-size="12">Generate executive</text>
+                        <text x="720" y="205" text-anchor="middle" font-size="12">summary</text>
+
+                        <!-- Step 6: Auto-populate -->
+                        <path d="M 780 190 L 820 190" stroke="#2E86AB" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        <rect x="820" y="150" width="60" height="80" fill="#27AE60" stroke="#1B2A4A" stroke-width="2" rx="6"/>
+                        <text x="850" y="180" text-anchor="middle" fill="white" font-weight="bold">Airtable</text>
+                        <text x="850" y="200" text-anchor="middle" fill="white" font-size="11">Update</text>
+
+                        <!-- Data fields extracted -->
+                        <g font-size="11" fill="#1B2A4A">
+                            <text x="20" y="290">Extracted Fields:</text>
+                            <text x="20" y="310">Full Name, Email, Phone</text>
+                            <text x="20" y="330">Teaching Experience (years), Skills (subjects)</text>
+                            <text x="20" y="350">Degree, Certifications, Work History</text>
+                            <text x="20" y="370">Visa Status, Nationality, Languages</text>
+                            <text x="420" y="310">Risk Flags Detected:</text>
+                            <text x="420" y="330">- Invalid teaching certs</text>
+                            <text x="420" y="350">- Expired passport/visa</text>
+                            <text x="420" y="370">- Gaps in work history</text>
+                        </g>
+
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#2E86AB"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+
+                <h3>Extracted Fields (Minimum Set)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Data Type</th>
+                            <th>Usage</th>
+                            <th>Confidence Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Full Name</td>
+                            <td>Text</td>
+                            <td>Candidate identification</td>
+                            <td>95%+</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>Email</td>
+                            <td>Deduplication, communication</td>
+                            <td>90%+</td>
+                        </tr>
+                        <tr>
+                            <td>Phone</td>
+                            <td>Phone</td>
+                            <td>Direct contact</td>
+                            <td>85%+</td>
+                        </tr>
+                        <tr>
+                            <td>Teaching Experience (years)</td>
+                            <td>Number</td>
+                            <td>Qualification matching</td>
+                            <td>85%+</td>
+                        </tr>
+                        <tr>
+                            <td>Primary Subject</td>
+                            <td>Text</td>
+                            <td>Vacancy matching</td>
+                            <td>80%+</td>
+                        </tr>
+                        <tr>
+                            <td>Highest Qualification</td>
+                            <td>Single Select</td>
+                            <td>Compliance, client requirements</td>
+                            <td>85%+</td>
+                        </tr>
+                        <tr>
+                            <td>Degree/University</td>
+                            <td>Text</td>
+                            <td>Qualification verification</td>
+                            <td>80%+</td>
+                        </tr>
+                        <tr>
+                            <td>Work History Dates</td>
+                            <td>Dates</td>
+                            <td>Gap detection, timeline</td>
+                            <td>90%+</td>
+                        </tr>
+                        <tr>
+                            <td>Languages Spoken</td>
+                            <td>Text</td>
+                            <td>Client location matching</td>
+                            <td>75%+</td>
+                        </tr>
+                        <tr>
+                            <td>Certifications</td>
+                            <td>Text</td>
+                            <td>Teaching qualification</td>
+                            <td>80%+</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Approval Workflow</h3>
+                <div class="table-spec">
+                    <h4>High Confidence (85%+)</h4>
+                    <p>Auto-populate fields and mark as "Parsed". Recruiter reviews but not required to approve.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Medium Confidence (70-84%)</h4>
+                    <p>Flag for manual review. Create task: "Review parsed CV fields". Recruiter corrects as needed before advancing candidate.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Low Confidence (<70%)</h4>
+                    <p>Alert recruiter. Require manual entry of critical fields before candidate can move to Screening stage.</p>
+                </div>
+
+                <h3>Integration with Airtable</h3>
+                <p style="margin: 1rem 0;"><strong>Trigger:</strong> File uploaded to "CV" field in Candidates table</p>
+                <p><strong>Process:</strong> Make webhook calls resume parser API → receives JSON → auto-maps to Airtable fields</p>
+                <p><strong>Automation:</strong> Create linked Candidate Experience records for each job listed</p>
+                <p><strong>Output:</strong> Update Candidates.Resume Parsed = "Yes", populate extracted fields, generate Executive Summary AI field</p>
+            </section>
+
+            <!-- SECTION 9: INTEGRATIONS -->
+            <section id="integrations" class="section">
+                <h2>🔌 Integration Map</h2>
+
+                <h3>API Layer</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Integration</th>
+                            <th>Purpose</th>
+                            <th>Data Flow</th>
+                            <th>Frequency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Airtable API</strong></td>
+                            <td>Core data layer. Read/write all records, create links, run scripts</td>
+                            <td>Bi-directional</td>
+                            <td>Real-time</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Make.com Webhooks</strong></td>
+                            <td>Workflow automation. Trigger actions on data changes.</td>
+                            <td>Inbound: Airtable → Make → External APIs</td>
+                            <td>Instant on trigger</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resume Parser API</strong></td>
+                            <td>Extract CV data. Populate candidate fields automatically.</td>
+                            <td>Inbound: CV file → Parser → JSON → Airtable</td>
+                            <td>On CV upload</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Email (SMTP/IMAP)</strong></td>
+                            <td>Email capture, forwarding, auto-responses. All communications logged.</td>
+                            <td>Bi-directional</td>
+                            <td>Real-time</td>
+                        </tr>
+                        <tr>
+                            <td><strong>WhatsApp Business API</strong></td>
+                            <td>Direct candidate messaging. Interview confirmations, offer sends.</td>
+                            <td>Outbound from Make</td>
+                            <td>On trigger</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PDF Generation</strong></td>
+                            <td>Create invoices, offer letters, submission packages</td>
+                            <td>Outbound from Make</td>
+                            <td>On demand</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Google Calendar</strong></td>
+                            <td>Interview scheduling, send calendar invites</td>
+                            <td>Outbound</td>
+                            <td>On interview creation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Slack/Teams</strong></td>
+                            <td>Alert team to high-priority events (placements, risk flags, overdue tasks)</td>
+                            <td>Outbound notifications</td>
+                            <td>On trigger</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Webhook Triggers (via Make)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trigger Event</th>
+                            <th>When</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>New Candidate Created</td>
+                            <td>Form submitted OR email added</td>
+                            <td>Send confirmation email, create task to review CV, send welcome SMS</td>
+                        </tr>
+                        <tr>
+                            <td>CV Uploaded</td>
+                            <td>File added to Candidate.CV field</td>
+                            <td>Call resume parser, create background task, notify recruiter</td>
+                        </tr>
+                        <tr>
+                            <td>Application Stage Changed</td>
+                            <td>User updates Applications.Stage field</td>
+                            <td>Update Communication Log, create corresponding tasks, trigger notifications</td>
+                        </tr>
+                        <tr>
+                            <td>Interview Created</td>
+                            <td>New Interviews record</td>
+                            <td>Send calendar invite, create prep task, notify client, log communication</td>
+                        </tr>
+                        <tr>
+                            <td>Application Placed</td>
+                            <td>Application.Stage = "Placed"</td>
+                            <td>Create Placement record, trigger Fees record, send confirmation emails, onboarding sequence</td>
+                        </tr>
+                        <tr>
+                            <td>Document Expiring</td>
+                            <td>Document.Expiry < 30 days</td>
+                            <td>Create task, alert compliance, send notification to candidate</td>
+                        </tr>
+                        <tr>
+                            <td>Task Due Tomorrow</td>
+                            <td>Daily check at 8 AM</td>
+                            <td>Send reminder email to task owner</td>
+                        </tr>
+                        <tr>
+                            <td>Risk Flag Added</td>
+                            <td>Candidate.Risk Flag set to TRUE</td>
+                            <td>Alert compliance and director, log note, create follow-up task</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Email Integration</h3>
+                <div class="table-spec">
+                    <h4>Inbound Email Processing</h4>
+                    <p><strong>Setup:</strong> Dedicated email addresses (careers@eduplace.com, applications@eduplace.com)</p>
+                    <p><strong>Processing:</strong> Emails auto-forwarded to Make. Parser extracts sender, subject, body, attachments.</p>
+                    <p><strong>Action:</strong> Create new Candidate OR find existing by email. Attach CV to record. Log communication. Create intake task.</p>
+                </div>
+
+                <div class="table-spec">
+                    <h4>Outbound Email Automation</h4>
+                    <p><strong>Sends:</strong> Confirmation, CV review request, interview invite, offer letter, rejection, congratulations, payment reminder</p>
+                    <p><strong>Tracking:</strong> All sends logged to Communication Log with timestamp, recipient, status (sent/bounced/opened)</p>
+                </div>
+
+                <h3>WhatsApp Integration</h3>
+                <div class="table-spec">
+                    <h4>Candidate Notifications</h4>
+                    <p>Trigger messages at key milestones: Application received, Interview scheduled, Offer extended, Congratulations placed, Payment confirmation</p>
+                    <p><strong>Opt-in:</strong> Candidates must consent. Tracked in Candidates.WhatsApp consent field.</p>
+                </div>
+
+                <h3>Data Security & Compliance</h3>
+                <ul style="margin-left: 2rem; margin-top: 1rem;">
+                    <li>All API calls use encrypted HTTPS</li>
+                    <li>API keys stored securely (never in scripts or logs)</li>
+                    <li>Rate limits respected (Airtable: 5 req/sec, Resume Parser: 100/day)</li>
+                    <li>Webhook payloads logged but sensitive fields masked (no SSN, passport numbers)</li>
+                    <li>Airtable API tokens rotated quarterly</li>
+                    <li>Make.com automations reviewed monthly for security</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 10: PHASE BUILD PLAN -->
+            <section id="phaseplan" class="section">
+                <h2>📅 Build Plan & Roadmap</h2>
+
+                <h3>Phase 1: Foundation (Weeks 1-3)</h3>
+                <div class="card">
+                    <h4>Deliverables</h4>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Complete Airtable schema (16 tables, all fields, links, views)</li>
+                        <li>Recruiter Dashboard (basic candidate list, application queue, task list)</li>
+                        <li>Form builder for website intake</li>
+                        <li>Basic automations: New candidate email, Application tracking</li>
+                        <li>Permission model implemented (6 roles)</li>
+                        <li>Communication Log auto-logging</li>
+                    </ul>
+                    <h4 style="margin-top: 1rem;">Success Criteria</h4>
+                    <p>Team can create candidates, link to vacancies, and progress applications from New Applicant to Interview stage. All data captured and linked.</p>
+                </div>
+
+                <h3>Phase 2: Intelligence (Weeks 4-6)</h3>
+                <div class="card">
+                    <h4>Deliverables</h4>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Resume parser integration (3 format types)</li>
+                        <li>AI fields: Executive Summary, Extracted Experience</li>
+                        <li>Advanced automations: Interview invites, offer letters, document expiry alerts</li>
+                        <li>Compliance Dashboard (document tracking, risk flags)</li>
+                        <li>Task assignment & escalation workflows</li>
+                        <li>Pipeline KPI reporting</li>
+                    </ul>
+                    <h4 style="margin-top: 1rem;">Success Criteria</h4>
+                    <p>CVs automatically parsed and candidate experience populated. Automations reduce manual data entry by 70%. Risk items flagged before interview.</p>
+                </div>
+
+                <h3>Phase 3: Client Experience (Weeks 7-10)</h3>
+                <div class="card">
+                    <h4>Deliverables</h4>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Client portal (dashboards, vacancy management, application tracking)</li>
+                        <li>Finance Dashboard (invoicing, payment tracking, AR aging)</li>
+                        <li>Executive Dashboard (KPIs, leaderboards, forecasting)</li>
+                        <li>Branded PDF outputs (offer letters, invoices, reports)</li>
+                        <li>WhatsApp integration for candidate notifications</li>
+                        <li>Email auto-response & forwarding system</li>
+                        <li>Training documentation for all 6 roles</li>
+                    </ul>
+                    <h4 style="margin-top: 1rem;">Success Criteria</h4>
+                    <p>Clients can self-service track roles and candidates. Finance team processes invoices without manual data entry. Leadership has real-time visibility into pipeline and revenue.</p>
+                </div>
+
+                <h3>Phase 4: Enterprise (Optional)</h3>
+                <div class="card">
+                    <h4>Deliverables</h4>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Custom frontend (React/Next.js) replacing Airtable interfaces</li>
+                        <li>REST API for candidate data, applications, placements</li>
+                        <li>Mobile app for recruiters (iOS/Android)</li>
+                        <li>Multi-tenant SaaS architecture</li>
+                        <li>Advanced reporting & business intelligence</li>
+                        <li>Compliance automation (GDPR, data retention)</li>
+                    </ul>
+                    <h4 style="margin-top: 1rem;">Timeline</h4>
+                    <p>Months 3-6 after Phase 3 completion. Consider only if need to scale beyond 50 concurrent users or 10,000 candidates.</p>
+                </div>
+
+                <h3>Success Metrics by Phase</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phase</th>
+                            <th>Metric</th>
+                            <th>Target</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="3"><strong>Phase 1</strong></td>
+                            <td>Candidates in system</td>
+                            <td>100+</td>
+                        </tr>
+                        <tr>
+                            <td>Applications processed</td>
+                            <td>50+</td>
+                        </tr>
+                        <tr>
+                            <td>Team adoption</td>
+                            <td>100% of team using daily</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>Phase 2</strong></td>
+                            <td>CVs parsed successfully</td>
+                            <td>95%+ accuracy</td>
+                        </tr>
+                        <tr>
+                            <td>Manual data entry reduction</td>
+                            <td>70% less time</td>
+                        </tr>
+                        <tr>
+                            <td>Time to placement</td>
+                            <td>Reduce by 30%</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>Phase 3</strong></td>
+                            <td>Client portal adoption</td>
+                            <td>80%+ of clients using</td>
+                        </tr>
+                        <tr>
+                            <td>Invoicing automation</td>
+                            <td>100% of placements invoiced on day 1</td>
+                        </tr>
+                        <tr>
+                            <td>Revenue visibility</td>
+                            <td>Real-time AR reporting</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Team & Resources</h3>
+                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 6px; border-left: 4px solid var(--blue);">
+                    <p><strong>Phase 1:</strong> 1 Airtable architect + 1 Make automation engineer. 3 weeks. Cost: $8K-12K</p>
+                    <p style="margin-top: 1rem;"><strong>Phase 2:</strong> +1 API engineer (resume parser), +1 AI specialist. 3 weeks. Cost: $12K-18K</p>
+                    <p style="margin-top: 1rem;"><strong>Phase 3:</strong> +1 frontend developer, +1 designer (UI/branding), +1 trainer. 4 weeks. Cost: $20K-30K</p>
+                    <p style="margin-top: 1rem;"><strong>Total Phase 1-3 Investment:</strong> $40K-60K over 10 weeks. ROI: 6-9 month payback from reduced hiring cycle time and improved placement rates.</p>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <section style="text-align: center; padding: 2rem; color: var(--gray); font-size: 0.9rem; margin-top: 3rem;">
+                <p><strong>Document Version:</strong> 1.0 | <strong>Last Updated:</strong> April 2, 2026</p>
+                <p style="margin-top: 0.5rem;">This document is the single source of truth for the Eduplace Recruitment Operating System. All architecture, schema, and integration decisions reference this document.</p>
+                <p style="margin-top: 0.5rem;">For updates or corrections, contact the system architect.</p>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Navigation highlighting
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Collapsible sections
+        function toggleCollapsible(element) {
+            element.classList.toggle('active');
+            const content = element.nextElementSibling;
+            if (content && content.classList.contains('collapsible-content')) {
+                content.classList.toggle('active');
+            }
+        }
+
+        // Highlight active section on scroll
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 300) {
+                    current = section.getAttribute('id');
+                }
+            });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
