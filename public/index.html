@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eduplace - Recruitment Operating System</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#1B2A4A;--blue:#2E86AB;--gold:#D4A84B;--light:#F5F5F5;--dark:#333}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);color:var(--dark);line-height:1.6;min-height:100vh}
+header{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;padding:1.5rem 2rem;position:sticky;top:0;z-index:100}
+.hdr{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.8rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.logo-icon{width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:var(--navy)}
+nav{display:flex;gap:2rem}
+nav a{color:#fff;text-decoration:none;font-size:.95rem}
+nav a:hover{color:var(--gold)}
+.container{max-width:1200px;margin:0 auto;padding:2rem}
+.hero{background:#fff;padding:4rem 2rem;border-radius:12px;box-shadow:0 4px 20px rgba(27,42,74,.1);text-align:center;margin-bottom:3rem}
+.hero h1{color:var(--navy);font-size:2.5rem;margin-bottom:.5rem}
+.hero .tagline{color:var(--blue);font-size:1.2rem;margin-bottom:1.5rem}
+.hero p{color:#666;font-size:1.05rem;max-width:600px;margin:0 auto 2rem}
+.cta{display:inline-block;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;padding:.9rem 2.2rem;border-radius:6px;text-decoration:none;font-weight:600;border:none;cursor:pointer;font-size:1rem}
+.cta:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(46,134,171,.3)}
+.section-title{color:var(--navy);font-size:2rem;margin-bottom:2rem;text-align:center;position:relative;padding-bottom:1rem}
+.section-title::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60px;height:4px;background:var(--gold);border-radius:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-bottom:2rem}
+.card{background:#fff;border-radius:10px;padding:1.8rem;box-shadow:0 2px 12px rgba(0,0,0,.08);transition:all .3s;cursor:pointer;border:2px solid transparent}
+.card:hover{transform:translateY(-8px);box-shadow:0 8px 25px rgba(46,134,171,.15);border-color:var(--gold)}
+.card-icon{font-size:2.5rem;margin-bottom:1rem}
+.card h3{color:var(--blue);margin-bottom:.8rem;font-size:1.3rem}
+.card p{color:#666;font-size:.95rem;margin-bottom:1.2rem}
+.card-link{color:var(--gold);text-decoration:none;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin:2rem 0}
+.stat{background:#fff;padding:1.5rem;border-radius:8px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.06);border-top:4px solid var(--gold)}
+.stat-num{font-size:2.2rem;font-weight:700;color:var(--blue);margin-bottom:.5rem}
+.stat-label{color:#666;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px}
+.qa{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:2rem;border-radius:10px;margin:2rem 0}
+.qa h3{margin-bottom:1.5rem;font-size:1.3rem}
+.action-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem}
+.action-btn{background:rgba(255,255,255,.15);color:#fff;padding:1rem;border-radius:6px;text-decoration:none;text-align:center;font-weight:600;border:1px solid rgba(255,255,255,.3);cursor:pointer;font-size:.95rem}
+.action-btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.api-status{background:#fff;padding:2rem;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin:2rem 0}
+.api-status h3{color:var(--navy);margin-bottom:1.5rem}
+.status-item{display:flex;justify-content:space-between;padding:1rem 0;border-bottom:1px solid #e0e0e0;align-items:center}
+.status-item:last-child{border-bottom:none}
+.endpoint{font-weight:600;color:var(--blue)}
+.badge{display:inline-block;padding:.4rem .8rem;border-radius:20px;font-size:.8rem;font-weight:600;background:#E8F5E9;color:#2E7D32}
+footer{background:var(--navy);color:#fff;padding:2rem;text-align:center;margin-top:3rem}
+.footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:1rem;flex-wrap:wrap}
+.footer-links a{color:var(--gold);text-decoration:none}
+.version{font-size:.85rem;color:#999;margin-top:1rem}
+@media(max-width:768px){.hero h1{font-size:1.8rem}nav{gap:1rem;font-size:.85rem}.container{padding:1rem}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="hdr"><div class="logo"><div class="logo-icon">E</div>Eduplace</div><nav><a href="#overview">Overview</a><a href="#system">System</a><a href="#api">API</a><a href="#docs">Docs</a></nav></div></header>
+<div class="container">
+<section class="hero"><h1>Eduplace Recruitment Operating System</h1><p class="tagline">Intelligent Resume Parsing & Candidate Management</p><p>Transform your recruitment workflow with AI-powered resume parsing, intelligent candidate tracking, and seamless pipeline management.</p><button class="cta" onclick="alert('Getting started with Eduplace...')">Get Started</button></section>
+<section id="overview"><h2 class="section-title">System Overview</h2><div class="stats"><div class="stat"><div class="stat-num">16</div><div class="stat-label">Data Tables</div></div><div class="stat"><div class="stat-num">10</div><div class="stat-label">Automations</div></div><div class="stat"><div class="stat-num">3</div><div class="stat-label">Resume Formats</div></div><div class="stat"><div class="stat-num">&#8734;</div><div class="stat-label">Scalability</div></div></div></section>
+<section id="system"><h2 class="section-title">System Modules</h2><div class="grid"><div class="card"><div class="card-icon">&#128202;</div><h3>Executive Dashboard</h3><p>Real-time pipeline analytics, candidate metrics, and recruitment KPIs.</p><a href="/dashboard" class="card-link">View Dashboard &#8594;</a></div><div class="card"><div class="card-icon">&#127959;</div><h3>System Architecture</h3><p>16 integrated Airtable tables, serverless functions, and webhook automations.</p><a href="/architecture" class="card-link">Learn Architecture &#8594;</a></div><div class="card"><div class="card-icon">&#9881;</div><h3>Automation Blueprints</h3><p>Pre-built Make.com workflows for resume parsing, candidate email, and more.</p><a href="/automations" class="card-link">View Automations &#8594;</a></div></div></section>
+<section class="qa"><h3>Quick Actions</h3><div class="action-btns"><button class="action-btn" onclick="alert('Opening resume parser...')">&#128196; Parse Resume</button><button class="action-btn" onclick="alert('Opening resume generator...')">&#128209; Generate Resume</button><button class="action-btn" onclick="alert('Loading pipeline...')">&#128200; View Pipeline</button><button class="action-btn" onclick="alert('Opening candidates...')">&#128101; Manage Candidates</button></div></section>
+<section id="api" class="api-status"><h3>API Endpoints Status</h3><div class="status-item"><span class="endpoint">POST /api/resume/parse</span><span class="badge">Operational</span></div><div class="status-item"><span class="endpoint">POST /api/resume/generate</span><span class="badge">Operational</span></div><div class="status-item"><span class="endpoint">POST /api/webhook</span><span class="badge">Operational</span></div><div class="status-item"><span class="endpoint">GET /api/health</span><span class="badge">Operational</span></div></div></section>
+<section id="docs"><h2 class="section-title">Key Features</h2><div class="grid"><div class="card"><div class="card-icon">&#129302;</div><h3>AI Resume Parser</h3><p>Extract personal info, experience, education, skills, certifications from any resume.</p></div><div class="card"><div class="card-icon">&#128196;</div><h3>Multi-Format Resumes</h3><p>Generate branded resumes in GCC, USA, and Global formats with professional PDF output.</p></div><div class="card"><div class="card-icon">&#128260;</div><h3>Event-Driven Workflows</h3><p>Webhook support for candidate creation, resume uploads, stage changes, and placements.</p></div><div class="card"><div class="card-icon">&#128274;</div><h3>Secure & Scalable</h3><p>Vercel serverless infrastructure with CORS, webhook signature validation, and env-based config.</p></div><div class="card"><div class="card-icon">&#127912;</div><h3>Branded Design</h3><p>Professional resume design with Eduplace branding (Navy, Blue, Gold).</p></div><div class="card"><div class="card-icon">&#9889;</div><h3>Real-Time Data Sync</h3><p>Airtable integration for candidate data, interview feedback, and placement tracking.</p></div></div></section>
+</div>
+<footer><div><h3>Eduplace Recruitment OS</h3><div class="footer-links"><a href="#overview">Overview</a><a href="#api">API</a><a href="#docs">Documentation</a><a href="mailto:support@eduplace.com">Support</a></div><div class="version"><p>Eduplace v1.0.0 | Vercel Serverless | Powered by Airtable + Make.com</p></div></div></footer>
+</body>
+</html>
