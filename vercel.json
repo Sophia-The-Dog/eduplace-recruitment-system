@@ -1,5 +1,25 @@
 {
   "version": 2,
+  "rewrites": [
+    {
+      "source": "/dashboard",
+      "destination": "/public/dashboard.html"
+    },
+    {
+      "source": "/architecture",
+      "destination": "/public/architecture.html"
+    },
+    {
+      "source": "/automations",
+      "destination": "/public/automations.html"
+    },
+    {
+      "source": "/((?!api|public).*)",
+      "destination": "/public/$1"
+    }
+  ]
+}{
+  "version": 2,
   "name": "eduplace-recruitment-system",
   "builds": [
     {
