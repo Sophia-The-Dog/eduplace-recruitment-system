@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eduplace Automation Blueprints | Recruitment Operating System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1B2A4A;
+            --blue: #2E86AB;
+            --gold: #D4A84B;
+            --light-bg: #F5F7FA;
+            --white: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
+            --success: #27AE60;
+            --warning: #E67E22;
+            --danger: #E74C3C;
+            --border: #E1E8ED;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html, body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--light-bg);
+        }
+
+        body {
+            display: flex;
+            color: var(--text-dark);
+        }
+
+        /* SIDEBAR NAVIGATION */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--navy) 0%, #0F1A2F 100%);
+            color: white;
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 25px 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .sidebar-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .sidebar-subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 0;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 14px 25px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            font-size: 14px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--gold);
+            border-left-color: var(--gold);
+        }
+
+        .sidebar-nav a.active {
+            background-color: rgba(46, 134, 171, 0.3);
+            color: var(--gold);
+            border-left-color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* MAIN CONTENT */
+        .main-container {
+            margin-left: 280px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 25px 40px;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* WORKFLOW CARDS */
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            max-width: 1400px;
+        }
+
+        .workflow-card {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+        }
+
+        .workflow-card:hover {
+            box-shadow: 0 8px 24px rgba(46, 134, 171, 0.12);
+            border-color: var(--blue);
+        }
+
+        .workflow-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .workflow-number {
+            background: var(--gold);
+            color: var(--navy);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .workflow-title {
+            flex: 1;
+        }
+
+        .workflow-title h2 {
+            font-size: 22px;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .workflow-description {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .workflow-body {
+            padding: 30px;
+        }
+
+        /* DIAGRAM SECTION */
+        .diagram-section {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .diagram-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .workflow-diagram {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 15px 0;
+            min-height: 120px;
+        }
+
+        .diagram-box {
+            background: white;
+            border: 2px solid var(--blue);
+            border-radius: 8px;
+            padding: 16px 20px;
+            min-width: 160px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(46, 134, 171, 0.1);
+        }
+
+        .diagram-box.trigger {
+            background: #E8F4F8;
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .diagram-box.action {
+            background: #FFF9E6;
+            border-color: var(--gold);
+            color: var(--navy);
+        }
+
+        .diagram-box.decision {
+            background: #FEE;
+            border-color: var(--danger);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+            font-size: 12px;
+        }
+
+        .diagram-box.success {
+            background: #E8F8F0;
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .diagram-arrow {
+            flex-shrink: 0;
+            color: var(--text-light);
+            font-size: 24px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* DETAILS SECTION */
+        .details-section {
+            margin-bottom: 30px;
+        }
+
+        .details-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .detail-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 700;
+            color: var(--navy);
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .detail-value {
+            color: var(--text-dark);
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: var(--light-bg);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 13px;
+        }
+
+        /* TWO-COLUMN LAYOUT */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .column-box {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .column-box h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .column-box ul, .column-box ol {
+            list-style: none;
+            padding: 0;
+        }
+
+        .column-box li {
+            padding: 8px 0 8px 25px;
+            font-size: 13px;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .column-box li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--blue);
+            font-weight: bold;
+        }
+
+        /* IMPLEMENTATION BADGE */
+        .implementation-section {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .impl-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .impl-airtable {
+            background: #E3F2FD;
+            color: #1976D2;
+            border: 1px solid #1976D2;
+        }
+
+        .impl-make {
+            background: #FFF3E0;
+            color: #E65100;
+            border: 1px solid #E65100;
+        }
+
+        .impl-zapier {
+            background: #F3E5F5;
+            color: #6A1B9A;
+            border: 1px solid #6A1B9A;
+        }
+
+        .impl-custom {
+            background: #E0F2F1;
+            color: #00695C;
+            border: 1px solid #00695C;
+        }
+
+        /* TIMELINE */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-item {
+            padding: 12px 0;
+            border-left: 2px solid var(--gold);
+            padding-left: 20px;
+            position: relative;
+            font-size: 13px;
+            color: var(--text-dark);
+        }
+
+        .timeline-item:before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            background: var(--gold);
+            border: 3px solid white;
+            border-radius: 50%;
+            position: absolute;
+            left: -8px;
+            top: 18px;
+            box-shadow: 0 0 0 2px var(--gold);
+        }
+
+        .timeline-item strong {
+            display: block;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        /* ALERT BOXES */
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid;
+            font-size: 13px;
+        }
+
+        .alert-info {
+            background: #E3F2FD;
+            border-color: #2196F3;
+            color: #0D47A1;
+        }
+
+        .alert-warning {
+            background: #FFF3E0;
+            border-color: #FF9800;
+            color: #E65100;
+        }
+
+        .alert-error {
+            background: #FFEBEE;
+            border-color: #F44336;
+            color: #C62828;
+        }
+
+        .alert-success {
+            background: #E8F5E9;
+            border-color: #4CAF50;
+            color: #1B5E20;
+        }
+
+        /* TABLE */
+        .field-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+
+        .field-table thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        .field-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+            border: 1px solid var(--border);
+        }
+
+        .field-table td {
+            padding: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .field-table tbody tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .field-table tbody tr:hover {
+            background: #EBF3F8;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--navy);
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+            font-size: 12px;
+            margin-left: 280px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* SCROLL BEHAVIOR */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--blue);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--navy);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-diagram {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+            }
+
+            .main-container {
+                margin-left: 250px;
+            }
+
+            .footer {
+                margin-left: 250px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .workflow-card:hover {
+                transform: none;
+            }
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            .sidebar {
+                display: none;
+            }
+
+            .main-container {
+                margin-left: 0;
+            }
+
+            .footer {
+                margin-left: 0;
+            }
+        }
+
+        /* SCROLL TO TOP BUTTON */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(46, 134, 171, 0.3);
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .scroll-to-top:hover {
+            background: var(--navy);
+            box-shadow: 0 8px 20px rgba(46, 134, 171, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .scroll-to-top.visible {
+            display: flex;
+        }
+
+        .intro-section {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .intro-section h2 {
+            color: var(--navy);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .intro-section p {
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .base-info {
+            background: var(--light-bg);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 13px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: var(--navy);
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">EDUPLACE</div>
+            <div class="sidebar-subtitle">Automation Blueprints</div>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="#intro" onclick="scrollToSection('intro')" class="nav-link active">Overview</a></li>
+            <li><a href="#flow-1" onclick="scrollToSection('flow-1')" class="nav-link">1. Candidate Intake</a></li>
+            <li><a href="#flow-2" onclick="scrollToSection('flow-2')" class="nav-link">2. Resume Processing</a></li>
+            <li><a href="#flow-3" onclick="scrollToSection('flow-3')" class="nav-link">3. Missing Documents</a></li>
+            <li><a href="#flow-4" onclick="scrollToSection('flow-4')" class="nav-link">4. Idle Candidate Alerts</a></li>
+            <li><a href="#flow-5" onclick="scrollToSection('flow-5')" class="nav-link">5. Job Inactivity Alerts</a></li>
+            <li><a href="#flow-6" onclick="scrollToSection('flow-6')" class="nav-link">6. Interview Flow</a></li>
+            <li><a href="#flow-7" onclick="scrollToSection('flow-7')" class="nav-link">7. Placement Flow</a></li>
+            <li><a href="#flow-8" onclick="scrollToSection('flow-8')" class="nav-link">8. Compliance Alerts</a></li>
+            <li><a href="#flow-9" onclick="scrollToSection('flow-9')" class="nav-link">9. Application Tracking</a></li>
+            <li><a href="#flow-10" onclick="scrollToSection('flow-10')" class="nav-link">10. Client Submission</a></li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-container">
+        <div class="header">
+            <h1>Eduplace Automation Blueprints</h1>
+            <div class="header-subtitle">Complete Recruitment Operating System Workflows | Airtable Base ID: appC97LZ25VRInfRq</div>
+        </div>
+
+        <div class="content">
+            <!-- INTRODUCTION -->
+            <div class="intro-section" id="intro">
+                <h2>Automation Overview</h2>
+                <p>This document provides comprehensive blueprints for all automation workflows in the Eduplace Recruitment Operating System. Each workflow is designed to streamline recruitment operations, ensure data consistency, and maintain compliance across the entire hiring pipeline.</p>
+                <p><strong>System Architecture:</strong> The system integrates 13 interconnected Airtable tables managing the complete candidate lifecycle from initial submission through placement and revenue tracking. Automations leverage native Airtable features, Make, and Zapier integrations.</p>
+                <div class="base-info">
+                    Base ID: appC97LZ25VRInfRq<br>
+                    Tables: 13 | Automations: 10 | Integration Tools: Airtable, Make, Zapier<br>
+                    Update Frequency: Real-time and scheduled workflows
+                </div>
+            </div>
+
+            <!-- WORKFLOW 1: CANDIDATE INTAKE FLOW -->
+            <div class="workflow-card" id="flow-1">
+                <div class="workflow-header">
+                    <div class="workflow-number">1</div>
+                    <div class="workflow-title">
+                        <h2>Candidate Intake Flow</h2>
+                        <div class="workflow-description">Automated intake processing from initial teacher submission through recruiter assignment</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Diagram</div>
+                        <div class="workflow-diagram">
+                            <div class="diagram-box trigger">New Teacher Submission</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Duplicate Check</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box decision">Duplicate Found?</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box success">Create Candidate Record</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Auto-Assign Recruiter</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box success">Task + Welcome Message</div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Event:</span>
+                            <span class="detail-value">New record created in Teacher Submissions</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblGoBhaRRPBJDBZo</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Required Fields:</span>
+                            <span class="detail-value">Email, Phone, Name</span>
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="details-section">
+                        <h3>Actions</h3>
+                        <div class="column-box">
+                            <h4>Step 1: Duplicate Check</h4>
+                            <ul>
+                                <li>Query Candidates table (tblPnMsI1upneASSY) for matching email OR phone</li>
+                                <li>If duplicate found: Flag {Duplicate_Flag} = true, notify assigned recruiter via email</li>
+                                <li>If no duplicate: Proceed to Step 2</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>Step 2: Create Candidate Record</h4>
+                            <ul>
+                                <li>Copy data from Teacher Submissions to Candidates table</li>
+                                <li>Set fields: Email, Phone, Name, Pipeline_Stage = "Intake", Source = "Direct Submission"</li>
+                                <li>Generated fields: ID (auto), Created_Date (auto), Last_Activity_Date (today)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="two-column">
+                        <div class="column-box">
+                            <h4>Step 3: Auto-Assign Recruiter</h4>
+                            <ul>
+                                <li>Query Recruiters table (tblA47YKd73wIwseA) for active recruiters</li>
+                                <li>Apply round-robin assignment based on Active_Status = true</li>
+                                <li>Set Assigned_Recruiter = {Recruiter_ID}</li>
+                                <li>Update Recruiter's Active_Candidates count</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>Step 4: Create Task & Send Messages</h4>
+                            <ul>
+                                <li>Create Task record: Title = "Screen Candidate [Name]"</li>
+                                <li>Set: Assigned_To = {Recruiter}, Due_Date = Today + 1 day</li>
+                                <li>Send welcome email via email integration</li>
+                                <li>Send WhatsApp message if phone has country code</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If duplicate found: Log to Communication Log, flag candidate record, create task for recruiter to resolve. If recruiter assignment fails, assign to default recruiter and escalate. If email send fails, log attempt and queue for retry.
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-make">Make</span>
+                            <span class="impl-badge impl-airtable">Airtable</span>
+                        </div>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Field (Source)</th>
+                                    <th>Field (Destination)</th>
+                                    <th>Field Type</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>tblGoBhaRRPBJDBZo.Email</td>
+                                    <td>tblPnMsI1upneASSY.Email</td>
+                                    <td>Email</td>
+                                    <td>Unique field - basis for duplicate check</td>
+                                </tr>
+                                <tr>
+                                    <td>tblGoBhaRRPBJDBZo.Phone</td>
+                                    <td>tblPnMsI1upneASSY.Phone</td>
+                                    <td>Phone Number</td>
+                                    <td>Alternative duplicate check field</td>
+                                </tr>
+                                <tr>
+                                    <td>tblGoBhaRRPBJDBZo.Full_Name</td>
+                                    <td>tblPnMsI1upneASSY.Name</td>
+                                    <td>Single Line Text</td>
+                                    <td>Candidate display name</td>
+                                </tr>
+                                <tr>
+                                    <td>tblGoBhaRRPBJDBZo.Submit_Date</td>
+                                    <td>tblPnMsI1upneASSY.Created_Date</td>
+                                    <td>Date</td>
+                                    <td>Intake submission timestamp</td>
+                                </tr>
+                                <tr>
+                                    <td>-</td>
+                                    <td>tblPnMsI1upneASSY.Pipeline_Stage</td>
+                                    <td>Single Select</td>
+                                    <td>Initial value: "Intake"</td>
+                                </tr>
+                                <tr>
+                                    <td>-</td>
+                                    <td>tblPnMsI1upneASSY.Assigned_Recruiter</td>
+                                    <td>Link to Records</td>
+                                    <td>Round-robin from Recruiters table</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Configuration:</strong> Set up Webhooks in Airtable to trigger Make workflow on new Teacher Submissions. Make scenario: Check duplicate → Create Candidate → Query Recruiters → Round-robin assign → Create Task → Send email/WhatsApp.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 2: RESUME PROCESSING FLOW -->
+            <div class="workflow-card" id="flow-2">
+                <div class="workflow-header">
+                    <div class="workflow-number">2</div>
+                    <div class="workflow-title">
+                        <h2>Resume Processing Flow</h2>
+                        <div class="workflow-description">Automated CV parsing and candidate experience record creation</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Diagram</div>
+                        <div class="workflow-diagram">
+                            <div class="diagram-box trigger">CV Attachment Uploaded</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Send to Resume Parser API</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Extract Data</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Create Experience Records</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box success">Update Candidate Fields</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box success">Create Review Task</div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Event:</span>
+                            <span class="detail-value">Attachment added to Candidates table</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblPnMsI1upneASSY</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Field Monitor:</span>
+                            <span class="detail-value">CV_Attachment (attachments field)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Accepted Formats:</span>
+                            <span class="detail-value">PDF, DOC, DOCX (max 10MB)</span>
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="details-section">
+                        <h3>Actions</h3>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <strong>Send to Resume Parser API</strong>
+                                Use Zapier integration with Lever Resume Parser or similar service. Extract: Job titles, companies, dates, education, skills, certifications.
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Create Candidate Experience Records</strong>
+                                For each job entry, create record in Candidate Experience table (tblxbDevO0PY19Wzv) with: Job_Title, Company, Start_Date, End_Date, Description
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Update Candidate Profile</strong>
+                                Set fields: Years_Experience (calculated), Skills (array), Education_Level, Resume_Parsed = true, Resume_Parse_Date = today
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Create Review Task</strong>
+                                Title: "Review & Approve [Name]'s Candidate Profile", Assigned_To: {Recruiter}, Priority: High, Due_Date: Today + 2 days
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-zapier">Zapier</span>
+                            <span class="impl-badge impl-custom">External API</span>
+                        </div>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Source Field</th>
+                                    <th>Parser Output</th>
+                                    <th>Destination Table/Field</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>tblPnMsI1upneASSY.CV_Attachment</td>
+                                    <td>File URL</td>
+                                    <td>Sent to Resume Parser API</td>
+                                </tr>
+                                <tr>
+                                    <td>job_title</td>
+                                    <td>Extracted string</td>
+                                    <td>tblxbDevO0PY19Wzv.Job_Title</td>
+                                </tr>
+                                <tr>
+                                    <td>company_name</td>
+                                    <td>Extracted string</td>
+                                    <td>tblxbDevO0PY19Wzv.Company</td>
+                                </tr>
+                                <tr>
+                                    <td>employment_dates</td>
+                                    <td>Start/End dates</td>
+                                    <td>tblxbDevO0PY19Wzv.Start_Date, End_Date</td>
+                                </tr>
+                                <tr>
+                                    <td>skills[]</td>
+                                    <td>Array of skills</td>
+                                    <td>tblPnMsI1upneASSY.Skills (multi-select)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If parsing fails: Set Resume_Parsed = false, create alert task for recruiter to manually review. If attachment is invalid format: Reject with notification. If API timeout: Queue for retry (max 3 attempts). If no experience records found: Create single record with "Unable to Parse" note.
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Configuration:</strong> Set up Zapier task: On new attachment → Get file → Call Resume Parser API → Filter and map results → Create Experience records → Update Candidate → Create Task. Alternative: Use Make with Salesforce Document Parser module.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 3: MISSING DOCUMENTS FLOW -->
+            <div class="workflow-card" id="flow-3">
+                <div class="workflow-header">
+                    <div class="workflow-number">3</div>
+                    <div class="workflow-title">
+                        <h2>Missing Documents Flow</h2>
+                        <div class="workflow-description">Escalating reminders for document collection with compliance tracking</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Timeline</div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <strong>Day 1 - Email Reminder</strong>
+                                First contact via email to candidate with document checklist and submission link
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Day 3 - WhatsApp Reminder</strong>
+                                Second contact via WhatsApp if phone available, include direct link
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Day 7 - Recruiter Escalation</strong>
+                                Create high-priority task for assigned recruiter to follow up
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Day 14 - Compliance Flag</strong>
+                                Set Compliance_Risk = true, notify leadership, move Pipeline_Stage to "On Hold"
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Event:</span>
+                            <span class="detail-value">Missing field checked in Candidate Documents</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblHbI1ZlTGW6MZ0t (Candidate Documents)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Field Monitor:</span>
+                            <span class="detail-value">Missing (checkbox)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Document Types:</span>
+                            <span class="detail-value">Passport, Reference Letters, Qualifications, Background Check, NI Number</span>
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="two-column">
+                        <div class="column-box">
+                            <h4>Day 1: Email Reminder</h4>
+                            <ul>
+                                <li>Send email template: "Document Submission Required"</li>
+                                <li>Include: Document checklist, deadline (7 days), submission portal link</li>
+                                <li>CC assigned recruiter</li>
+                                <li>Log to Communication Log with timestamp</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>Day 3: WhatsApp Reminder</h4>
+                            <ul>
+                                <li>Send WhatsApp message to candidate</li>
+                                <li>Include: Missing document list, submission link</li>
+                                <li>Friendly, non-urgent tone</li>
+                                <li>Log message in Communication Log</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="two-column">
+                        <div class="column-box">
+                            <h4>Day 7: Recruiter Escalation</h4>
+                            <ul>
+                                <li>Create Task: "URGENT: Follow up [Candidate] for missing docs"</li>
+                                <li>Priority: High, Flag: true</li>
+                                <li>Due Date: Today + 1 day</li>
+                                <li>Include document details in description</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>Day 14: Compliance Flag</h4>
+                            <ul>
+                                <li>Set Compliance_Risk = true on Candidate record</li>
+                                <li>Update Pipeline_Stage = "On Hold"</li>
+                                <li>Send alert to Leadership contact</li>
+                                <li>Create follow-up task with 30-day deadline</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-make">Make</span>
+                            <span class="impl-badge impl-zapier">Zapier</span>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Implementation Approach:</strong> Use Airtable automations for scheduling. Create four separate automations: (1) Day 1 email - triggers immediately when Missing = true, (2) Day 3 - scheduled workflow that checks Missing = true on Candidate Documents created 3 days ago, (3) Day 7 - scheduled workflow for 7-day-old records, (4) Day 14 - scheduled workflow for 14-day-old records with compliance flagging.
+                        </div>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If email send fails: Create manual reminder task. If WhatsApp fails (no phone): Log attempt, skip to next step. If document submitted after escalation: Automatically cancel pending tasks and update Missing = false, send confirmation email.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 4: IDLE CANDIDATE ALERTS -->
+            <div class="workflow-card" id="flow-4">
+                <div class="workflow-header">
+                    <div class="workflow-number">4</div>
+                    <div class="workflow-title">
+                        <h2>Idle Candidate Alerts</h2>
+                        <div class="workflow-description">Daily check for inactive candidates with automated recruiter notifications</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Diagram</div>
+                        <div class="workflow-diagram">
+                            <div class="diagram-box trigger">Daily Scheduled Check</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box decision">Last Activity > 5 Days?</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box decision">Not Placed/Rejected?</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Create Follow-up Task</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box success">Notify Recruiter</div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Type:</span>
+                            <span class="detail-value">Scheduled daily automation</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Frequency:</span>
+                            <span class="detail-value">Every day at 9:00 AM</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblPnMsI1upneASSY (Candidates)</span>
+                        </div>
+                    </div>
+
+                    <!-- CONDITIONS & ACTIONS -->
+                    <div class="details-section">
+                        <h3>Filter Conditions</h3>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Condition</th>
+                                    <th>Operator</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Last_Activity_Date</td>
+                                    <td>is before</td>
+                                    <td>TODAY() - 5 days</td>
+                                </tr>
+                                <tr>
+                                    <td>Pipeline_Stage</td>
+                                    <td>is not any of</td>
+                                    <td>Placed, Rejected, Withdrawn</td>
+                                </tr>
+                                <tr>
+                                    <td>Assigned_Recruiter</td>
+                                    <td>is not empty</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>Active_Status</td>
+                                    <td>equals</td>
+                                    <td>true (or blank)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="two-column">
+                        <div class="column-box">
+                            <h4>Actions for Idle Candidates</h4>
+                            <ul>
+                                <li>Create Task in Tasks table</li>
+                                <li>Title: "Follow up: [Candidate Name] (5+ days idle)"</li>
+                                <li>Priority: Medium</li>
+                                <li>Assign to: {Assigned_Recruiter}</li>
+                                <li>Due Date: Today + 1 day</li>
+                                <li>Include candidate details and last activity info in description</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>Recruiter Notification</h4>
+                            <ul>
+                                <li>Send email to recruiter with alert</li>
+                                <li>Include: Candidate name, stage, last activity date</li>
+                                <li>Suggest next actions based on pipeline stage</li>
+                                <li>Attach list if multiple idle candidates assigned</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-airtable">Airtable Automation</span>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Setup:</strong> Use Airtable's native automation with daily trigger at 9:00 AM. Condition: Find records where Last_Activity_Date < TODAY()-5 AND Pipeline_Stage ≠ "Placed" AND Pipeline_Stage ≠ "Rejected". For each record: Create task in Tasks table linked to Candidate and Recruiter. Send email notification to recruiter email from Recruiters table lookup.
+                        </div>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If recruiter unassigned: Send to default recruiter or skip. If email fails: Task still created for visibility. Track task creation in Communication Log to prevent duplicates on reruns.
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>Optimization:</strong> Exclude candidates with tasks created within last 3 days to avoid duplicate task creation. Update Last_Activity_Date whenever any application stage changes or task is completed.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 5: JOB INACTIVITY ALERTS -->
+            <div class="workflow-card" id="flow-5">
+                <div class="workflow-header">
+                    <div class="workflow-number">5</div>
+                    <div class="workflow-title">
+                        <h2>Job Inactivity Alerts</h2>
+                        <div class="workflow-description">Scheduled check for open vacancies with insufficient applicant activity</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Diagram</div>
+                        <div class="workflow-diagram">
+                            <div class="diagram-box trigger">Daily Scheduled Check</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box decision">Vacancy Open > 7 Days?</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box decision">No Submitted Apps?</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Create Urgent Task</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box success">Escalate to Leadership</div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Type:</span>
+                            <span class="detail-value">Scheduled daily automation</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Frequency:</span>
+                            <span class="detail-value">Every weekday at 10:00 AM</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblzvVLKq5AQ1rtvG (Vacancies)</span>
+                        </div>
+                    </div>
+
+                    <!-- CONDITIONS -->
+                    <div class="details-section">
+                        <h3>Filter Conditions</h3>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Condition</th>
+                                    <th>Operator</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Created_Date</td>
+                                    <td>is before</td>
+                                    <td>TODAY() - 7 days</td>
+                                </tr>
+                                <tr>
+                                    <td>Status</td>
+                                    <td>equals</td>
+                                    <td>Open</td>
+                                </tr>
+                                <tr>
+                                    <td>Applications (count)</td>
+                                    <td>with Stage = Submitted</td>
+                                    <td>= 0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="two-column">
+                        <div class="column-box">
+                            <h4>Task Creation</h4>
+                            <ul>
+                                <li>Create Task: "URGENT: No applicants for [Job Title]"</li>
+                                <li>Priority: High/Critical</li>
+                                <li>Assign to: Linked Client Contact (from Vacancies.Client_Contact)</li>
+                                <li>Due Date: Today</li>
+                                <li>Include vacancy details and posting age in description</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>Leadership Alert</h4>
+                            <ul>
+                                <li>Send email to Recruiting Leadership</li>
+                                <li>Include: Vacancy title, client, days posted, applications count</li>
+                                <li>Suggest actions: Adjust requirements, increase posting visibility, etc.</li>
+                                <li>Aggregate report if multiple vacancies affected</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-make">Make</span>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Setup:</strong> Create Make scenario with: (1) Schedule trigger - daily at 10:00 AM, (2) Query Vacancies table - filter Status = "Open" AND Created_Date < TODAY()-7, (3) For each vacancy, count Applications with Stage = "Submitted", (4) If count = 0, create task and send email to leadership contact from setup.
+                        </div>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If client contact missing: Send to recruitment leadership instead. If task creation fails: Log to Communication Log with manual flag. Exclude vacancies marked as "On Hold" status. Skip vacancies with status change within last 24 hours.
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>Optimization:</strong> Include total application count (regardless of stage) to show activity level. Track which recruitment channels were used for each vacancy to recommend additional channels.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 6: INTERVIEW FLOW -->
+            <div class="workflow-card" id="flow-6">
+                <div class="workflow-header">
+                    <div class="workflow-number">6</div>
+                    <div class="workflow-title">
+                        <h2>Interview Flow</h2>
+                        <div class="workflow-description">Automated interview scheduling, reminders, and feedback collection</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Timeline</div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <strong>Interview Created</strong>
+                                New Interview record created, send calendar invite to interviewer and candidate with meeting details
+                            </div>
+                            <div class="timeline-item">
+                                <strong>24 Hours Before</strong>
+                                Automated reminder email sent to interviewer with candidate profile link and preparation notes
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Interview Date Arrives</strong>
+                                2-hour reminder to both candidate and interviewer via email/WhatsApp
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Post-Interview</strong>
+                                Create "Log Feedback" task for interviewer with template to complete assessment
+                            </div>
+                            <div class="timeline-item">
+                                <strong>48 Hours Later</strong>
+                                If no feedback submitted, escalate with urgent reminder task
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Event:</span>
+                            <span class="detail-value">New Interview record created</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tbl7SXbehX3aJbjES (Interviews)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Required Fields:</span>
+                            <span class="detail-value">Candidate (link), Interviewer, Interview_Date, Interview_Time, Status = "Scheduled"</span>
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="details-section">
+                        <h3>Actions</h3>
+                        <div class="two-column">
+                            <div class="column-box">
+                                <h4>Step 1: Send Calendar Invites</h4>
+                                <ul>
+                                    <li>Get interviewer email from linked Recruiters record</li>
+                                    <li>Get candidate email from linked Candidates record</li>
+                                    <li>Send iCal calendar invite with: Meeting time, duration, location/call link, candidate name/background</li>
+                                    <li>Mark Interview field: Calendar_Invite_Sent = true</li>
+                                </ul>
+                            </div>
+                            <div class="column-box">
+                                <h4>Step 2: Create Pre-Interview Task</h4>
+                                <ul>
+                                    <li>Create task 1 day before: "Prepare for [Candidate] interview"</li>
+                                    <li>Due Date: Interview_Date - 1 day</li>
+                                    <li>Assigned to: Interviewer</li>
+                                    <li>Include: Candidate profile summary, CV link, role requirements</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="two-column">
+                        <div class="column-box">
+                            <h4>Step 3: Send Reminders</h4>
+                            <ul>
+                                <li>24 hours before: Email to interviewer with candidate prep materials</li>
+                                <li>2 hours before: Email/SMS to candidate with meeting access details</li>
+                                <li>2 hours before: Email to interviewer with final reminder</li>
+                                <li>Log all reminders in Communication Log</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>Step 4: Post-Interview Feedback</h4>
+                            <ul>
+                                <li>Create task: "Log Interview Feedback: [Candidate]"</li>
+                                <li>Due Date: Interview_Date + 1 day</li>
+                                <li>Include form template: Rating, Recommendation, Notes</li>
+                                <li>Update Interview.Feedback_Status = "Pending"</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- FEEDBACK ESCALATION -->
+                    <div class="details-section">
+                        <h3>Feedback Escalation (48 Hour Check)</h3>
+                        <div class="alert alert-warning">
+                            <strong>Scheduled Workflow:</strong> Run daily at 9 AM. Check Interviews where Feedback_Status = "Pending" AND Interview_Date was 2+ days ago. Create escalation task: "URGENT: [Interviewer] - Feedback overdue for [Candidate]". Set Priority = High. Send email to interviewer + their manager.
+                        </div>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-make">Make</span>
+                            <span class="impl-badge impl-zapier">Zapier</span>
+                        </div>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Purpose</th>
+                                    <th>Integration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>tbl7SXbehX3aJbjES.Interview_Date</td>
+                                    <td>Trigger timing for reminders and tasks</td>
+                                    <td>Make scheduler</td>
+                                </tr>
+                                <tr>
+                                    <td>tbl7SXbehX3aJbjES.Interviewer</td>
+                                    <td>Link to Recruiters table for email/assignment</td>
+                                    <td>Lookup field</td>
+                                </tr>
+                                <tr>
+                                    <td>tbl7SXbehX3aJbjES.Candidate</td>
+                                    <td>Link to Candidates table for contact info</td>
+                                    <td>Lookup field</td>
+                                </tr>
+                                <tr>
+                                    <td>tbl7SXbehX3aJbjES.Feedback_Status</td>
+                                    <td>Track feedback completion (Pending/Submitted)</td>
+                                    <td>Single Select</td>
+                                </tr>
+                                <tr>
+                                    <td>tbl7SXbehX3aJbjES.Interview_Notes</td>
+                                    <td>Interviewer feedback and assessment</td>
+                                    <td>Long text</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If interviewer email missing: Use fallback contact from Recruiters record. If candidate email missing: Send SMS instead if phone available. If calendar invite fails: Create manual task reminder. If feedback form not completed: Send template via email for offline completion.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 7: PLACEMENT FLOW -->
+            <div class="workflow-card" id="flow-7">
+                <div class="workflow-header">
+                    <div class="workflow-number">7</div>
+                    <div class="workflow-title">
+                        <h2>Placement Flow</h2>
+                        <div class="workflow-description">End-to-end placement processing with fee calculation and revenue tracking</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Diagram</div>
+                        <div class="workflow-diagram">
+                            <div class="diagram-box trigger">Application Stage → Placed</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Create Placement Record</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Calculate Placement Fee</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Create Invoice Record</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Update Vacancy Status</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box success">Update Candidate Stage</div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Event:</span>
+                            <span class="detail-value">Stage field changed to "Placed" in Applications table</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblHU2swkWz9xPMTR (Applications)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Required Linked Records:</span>
+                            <span class="detail-value">Candidate, Vacancy, Client & Employers</span>
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="details-section">
+                        <h3>Actions</h3>
+                        <div class="column-box">
+                            <h4>Step 1: Create Placement Record</h4>
+                            <ul>
+                                <li>Create record in Placements table (tbljCoyaDjtzUKKLm)</li>
+                                <li>Populate fields:</li>
+                                <li style="margin-left: 20px;">- Candidate: Link from Applications.Candidate</li>
+                                <li style="margin-left: 20px;">- Vacancy: Link from Applications.Vacancy</li>
+                                <li style="margin-left: 20px;">- Client: Link from Vacancy.Client</li>
+                                <li style="margin-left: 20px;">- Placement_Date: TODAY()</li>
+                                <li style="margin-left: 20px;">- Status: "Active" (on 90-day guarantee)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="two-column">
+                        <div class="column-box">
+                            <h4>Step 2: Calculate Fee & Create Invoice</h4>
+                            <ul>
+                                <li>Get vacancy Salary from tblzvVLKq5AQ1rtvG</li>
+                                <li>Get Client Fee_Percentage from tblD6c8lsJehrwbgp</li>
+                                <li>Calculate: Placement_Fee = Salary × Fee_Percentage</li>
+                                <li>Create Invoice in Fees & Revenue (tblOp40e8ApV6IeL4)</li>
+                                <li>Set: Amount = Placement_Fee, Client = Vacancy.Client</li>
+                                <li>Invoice_Date = TODAY(), Due_Date = TODAY() + 30 days</li>
+                                <li>Status = "Pending"</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>Step 3: Update Vacancy & Candidate</h4>
+                            <ul>
+                                <li>Vacancy: Status = "Filled", Filled_Date = TODAY()</li>
+                                <li>Candidate: Pipeline_Stage = "Placed", Placed_Date = TODAY()</li>
+                                <li>Create Placement record link in both</li>
+                                <li>Send confirmation emails to:</li>
+                                <li style="margin-left: 20px;">- Candidate (congratulations)</li>
+                                <li style="margin-left: 20px;">- Client contact (placement confirmation)</li>
+                                <li style="margin-left: 20px;">- Assigned recruiter (placement logged)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- GUARANTEE PERIOD -->
+                    <div class="details-section">
+                        <h3>90-Day Guarantee Period</h3>
+                        <div class="alert alert-info">
+                            <strong>Automated Tracking:</strong> Set Guarantee_End_Date = Placement_Date + 90 days. Create scheduled task: If candidate leaves (marked as Inactive) before Guarantee_End_Date, log as guarantee claim. Notify recruiter and finance team. Flag for replacement hiring. Track replacement placements separately.
+                        </div>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-make">Make</span>
+                            <span class="impl-badge impl-airtable">Airtable</span>
+                        </div>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Source Field</th>
+                                    <th>Calculation/Lookup</th>
+                                    <th>Destination Field</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Applications.Stage</td>
+                                    <td>Trigger when = "Placed"</td>
+                                    <td>Workflow initiator</td>
+                                </tr>
+                                <tr>
+                                    <td>Vacancy.Salary</td>
+                                    <td>Lookup via Application link</td>
+                                    <td>Fee calculation basis</td>
+                                </tr>
+                                <tr>
+                                    <td>Client.Fee_Percentage</td>
+                                    <td>Lookup via Vacancy.Client</td>
+                                    <td>Placement_Fee = Salary × %</td>
+                                </tr>
+                                <tr>
+                                    <td>-</td>
+                                    <td>Placement_Fee (calculated)</td>
+                                    <td>Fees & Revenue.Amount</td>
+                                </tr>
+                                <tr>
+                                    <td>-</td>
+                                    <td>TODAY()</td>
+                                    <td>Placement.Placement_Date & Guarantee_End_Date + 90</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If salary missing: Flag for manual calculation, create task for finance team. If client fee percentage not set: Use default 20% and flag for review. If Client record missing: Halt workflow, create escalation task. If invoice creation fails: Retry after 5 minutes, then escalate to finance. All fee calculations logged in Communication Log.
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>Optimization:</strong> Track placement success rate by recruiter and client. Include placement confirmation email template with onboarding checklist. Auto-generate candidate start date tasks.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 8: COMPLIANCE ALERTS -->
+            <div class="workflow-card" id="flow-8">
+                <div class="workflow-header">
+                    <div class="workflow-number">8</div>
+                    <div class="workflow-title">
+                        <h2>Compliance Alerts</h2>
+                        <div class="workflow-description">Weekly document expiry tracking and compliance risk management</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Timeline</div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <strong>Weekly Check - Runs Every Monday</strong>
+                                Scan all Candidate Documents records for approaching expiry dates
+                            </div>
+                            <div class="timeline-item">
+                                <strong>30-Day Window Alert</strong>
+                                If Expiry_Date within 30 days: Create task, notify recruiter and candidate via email
+                            </div>
+                            <div class="timeline-item">
+                                <strong>14-Day Final Notice</strong>
+                                If Expiry_Date within 14 days: Escalate to manager, mark Compliance_Risk = true on Candidate
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Post-Expiry</strong>
+                                If Expiry_Date has passed: Suspend candidate from placement pipeline, notify all stakeholders
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Type:</span>
+                            <span class="detail-value">Scheduled weekly automation</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Frequency:</span>
+                            <span class="detail-value">Every Monday at 8:00 AM</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblHbI1ZlTGW6MZ0t (Candidate Documents)</span>
+                        </div>
+                    </div>
+
+                    <!-- CONDITIONS -->
+                    <div class="details-section">
+                        <h3>Document Types & Expiry Tracking</h3>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Document Type</th>
+                                    <th>Expiry Field</th>
+                                    <th>Renewal Required</th>
+                                    <th>Alert Threshold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Passport / ID</td>
+                                    <td>Expiry_Date</td>
+                                    <td>Yes</td>
+                                    <td>30 days before</td>
+                                </tr>
+                                <tr>
+                                    <td>Visa / Work Permit</td>
+                                    <td>Expiry_Date</td>
+                                    <td>Yes</td>
+                                    <td>30 days before</td>
+                                </tr>
+                                <tr>
+                                    <td>Background Check</td>
+                                    <td>Expiry_Date</td>
+                                    <td>Yes (annually)</td>
+                                    <td>14 days before</td>
+                                </tr>
+                                <tr>
+                                    <td>Reference Letters</td>
+                                    <td>Issue_Date</td>
+                                    <td>Annual refresh</td>
+                                    <td>365 days</td>
+                                </tr>
+                                <tr>
+                                    <td>Qualifications</td>
+                                    <td>Not applicable</td>
+                                    <td>No</td>
+                                    <td>N/A</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="two-column">
+                        <div class="column-box">
+                            <h4>30-Day Alert Action</h4>
+                            <ul>
+                                <li>Find records: Expiry_Date between TODAY() and TODAY() + 30</li>
+                                <li>Get linked Candidate info</li>
+                                <li>Create task: "Renew [Document Type]: [Candidate Name]"</li>
+                                <li>Assigned to: Linked Recruiter</li>
+                                <li>Due Date: Expiry_Date - 5 days</li>
+                                <li>Send email to candidate with renewal instructions</li>
+                            </ul>
+                        </div>
+                        <div class="column-box">
+                            <h4>14-Day Critical Alert</h4>
+                            <ul>
+                                <li>Find records: Expiry_Date between TODAY() and TODAY() + 14</li>
+                                <li>Create URGENT task: "CRITICAL: Renew [Document] - [Candidate]"</li>
+                                <li>Set Candidate.Compliance_Risk = true</li>
+                                <li>Update Candidate.Pipeline_Stage = "Compliance Hold"</li>
+                                <li>Send SMS + email to candidate</li>
+                                <li>Alert recruiter manager</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="column-box">
+                        <h4>Post-Expiry Action</h4>
+                        <ul>
+                            <li>Find records: Expiry_Date < TODAY()</li>
+                            <li>Set Candidate.Active_Status = false</li>
+                            <li>Update Candidate.Pipeline_Stage = "Suspended - Expired Docs"</li>
+                            <li>Create mandatory task: "URGENT: [Candidate] - Expired documents"</li>
+                            <li>Send notification to compliance officer and recruiter manager</li>
+                            <li>Remove from active placement consideration until renewed</li>
+                        </ul>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-airtable">Airtable Automation</span>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Setup:</strong> Create 3 separate automations in Airtable: (1) Monday 8 AM - find docs expiring in 30 days, create tasks, send emails; (2) Monday 8 AM - find docs expiring in 14 days, escalate to Compliance_Risk status; (3) Monday 8 AM - find expired docs, suspend candidates. Use batch processing to handle multiple documents per candidate.
+                        </div>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If Expiry_Date missing: Mark as "Expiry Unknown" and create review task. If candidate email missing: Contact via recruiter. If document renewal confirmation received: Update Document_Status = "Valid", remove Compliance_Risk flag, update Pipeline_Stage back to normal. Log all compliance actions in Communication Log for audit trail.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 9: APPLICATION STAGE TRACKING -->
+            <div class="workflow-card" id="flow-9">
+                <div class="workflow-header">
+                    <div class="workflow-number">9</div>
+                    <div class="workflow-title">
+                        <h2>Application Stage Tracking</h2>
+                        <div class="workflow-description">Comprehensive activity logging with stage-triggered actions</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Diagram</div>
+                        <div class="workflow-diagram">
+                            <div class="diagram-box trigger">Stage Field Changed</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Log Timestamp</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Create Log Entry</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box action">Update Activity Date</div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-box success">Trigger Stage Actions</div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Event:</span>
+                            <span class="detail-value">Stage field value changed in Applications table</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblHU2swkWz9xPMTR (Applications)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Field Monitor:</span>
+                            <span class="detail-value">Stage (single select)</span>
+                        </div>
+                    </div>
+
+                    <!-- STAGE DEFINITIONS -->
+                    <div class="details-section">
+                        <h3>Application Pipeline Stages</h3>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Stage</th>
+                                    <th>Description</th>
+                                    <th>Triggered Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Applied</td>
+                                    <td>Initial application received</td>
+                                    <td>Log entry, send confirmation email to candidate, update Last_Activity_Date</td>
+                                </tr>
+                                <tr>
+                                    <td>Screened</td>
+                                    <td>CV reviewed by recruiter</td>
+                                    <td>Create "Conduct Interview" task, notify candidate of next steps, update Candidate stage if needed</td>
+                                </tr>
+                                <tr>
+                                    <td>Interview Scheduled</td>
+                                    <td>Interview confirmed with date/time</td>
+                                    <td>Trigger Interview Flow (Workflow 6), send calendar invite</td>
+                                </tr>
+                                <tr>
+                                    <td>Interviewed</td>
+                                    <td>Interview completed</td>
+                                    <td>Create feedback task, schedule 48-hr escalation check, update Candidate.Last_Activity_Date</td>
+                                </tr>
+                                <tr>
+                                    <td>Submitted</td>
+                                    <td>Candidate submitted to client</td>
+                                    <td>Trigger Client Submission Flow (Workflow 10), start 48-hr response timer, notify candidate</td>
+                                </tr>
+                                <tr>
+                                    <td>Shortlisted</td>
+                                    <td>Client approved candidate</td>
+                                    <td>Send congratulations email, create scheduling task, update Candidate status</td>
+                                </tr>
+                                <tr>
+                                    <td>Placed</td>
+                                    <td>Offer accepted, starting role</td>
+                                    <td>Trigger Placement Flow (Workflow 7), create onboarding tasks, update vacancy status</td>
+                                </tr>
+                                <tr>
+                                    <td>Rejected</td>
+                                    <td>Application unsuccessful</td>
+                                    <td>Send rejection email with feedback if available, move Candidate to available for other roles</td>
+                                </tr>
+                                <tr>
+                                    <td>Withdrawn</td>
+                                    <td>Candidate withdrew application</td>
+                                    <td>Log reason if provided, update Candidate status, flag for feedback survey</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- LOGGING & TRACKING -->
+                    <div class="details-section">
+                        <h3>Automatic Logging Actions</h3>
+                        <div class="two-column">
+                            <div class="column-box">
+                                <h4>Communication Log Entry</h4>
+                                <ul>
+                                    <li>Create record in tbl7vQH6McfufblE9</li>
+                                    <li>Populate:</li>
+                                    <li style="margin-left: 20px;">- Candidate: Link from Application</li>
+                                    <li style="margin-left: 20px;">- Type: "Application Stage Changed"</li>
+                                    <li style="margin-left: 20px;">- Previous_Stage: Old value</li>
+                                    <li style="margin-left: 20px;">- New_Stage: New value</li>
+                                    <li style="margin-left: 20px;">- Timestamp: TODAY() + NOW()</li>
+                                    <li style="margin-left: 20px;">- Recruiter: {Assigned_Recruiter}</li>
+                                </ul>
+                            </div>
+                            <div class="column-box">
+                                <h4>Candidate Activity Update</h4>
+                                <ul>
+                                    <li>Update linked Candidate record:</li>
+                                    <li style="margin-left: 20px;">- Last_Activity_Date = TODAY()</li>
+                                    <li style="margin-left: 20px;">- Last_Stage_Change = Stage value</li>
+                                    <li style="margin-left: 20px;">- Days_in_Current_Stage = 0 (reset)</li>
+                                    <li style="margin-left: 20px;">- Activity_Count += 1</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-airtable">Airtable Automation</span>
+                            <span class="impl-badge impl-make">Make</span>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Setup:</strong> Create main Airtable automation: When Stage changes, create Communication Log entry and update Candidate. Chain secondary automations or Make scenarios to trigger stage-specific actions based on the new stage value. Use conditional logic to route to appropriate downstream workflows.
+                        </div>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If Application missing linked Candidate: Log warning, create manual review task. If stage change invalid (e.g., from Placed to Screened): Flag as data integrity issue, notify admin. If Communication Log creation fails: Log to error queue and retry. All stage changes auditable via Communication Log.
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>Analytics:</strong> Track average time in each stage per recruiter. Monitor stage success rates. Generate reports on application velocity and bottlenecks.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORKFLOW 10: CLIENT SUBMISSION FLOW -->
+            <div class="workflow-card" id="flow-10">
+                <div class="workflow-header">
+                    <div class="workflow-number">10</div>
+                    <div class="workflow-title">
+                        <h2>Client Submission Flow</h2>
+                        <div class="workflow-description">Candidate submission to clients with response tracking and follow-up management</div>
+                    </div>
+                </div>
+                <div class="workflow-body">
+                    <!-- DIAGRAM -->
+                    <div class="diagram-section">
+                        <div class="diagram-title">Workflow Timeline</div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <strong>Submission Event</strong>
+                                Application Stage changed to "Submitted", start timer for client response
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Immediate: Send Candidate Profile</strong>
+                                Email client contact with candidate summary, CV, and screening notes
+                            </div>
+                            <div class="timeline-item">
+                                <strong>24 Hours: Check-in Task</strong>
+                                Create task for recruiter to ensure client received submission
+                            </div>
+                            <div class="timeline-item">
+                                <strong>48 Hours: No Response Follow-up</strong>
+                                If no response: Create reminder task and send email to client contact
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Client Response Processing</strong>
+                                When response received (Shortlisted/Rejected), log feedback and update Application
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRIGGER -->
+                    <div class="details-section">
+                        <h3>Trigger</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Event:</span>
+                            <span class="detail-value">Application Stage changed to "Submitted"</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Table:</span>
+                            <span class="detail-value">tblHU2swkWz9xPMTR (Applications)</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Required Data:</span>
+                            <span class="detail-value">Candidate profile, Vacancy/Client details, Client contact email</span>
+                        </div>
+                    </div>
+
+                    <!-- IMMEDIATE ACTIONS -->
+                    <div class="details-section">
+                        <h3>Immediate Actions (On Submission)</h3>
+                        <div class="two-column">
+                            <div class="column-box">
+                                <h4>Build Candidate Package</h4>
+                                <ul>
+                                    <li>Retrieve from Candidates (tblPnMsI1upneASSY):</li>
+                                    <li style="margin-left: 20px;">- Name, Email, Phone</li>
+                                    <li style="margin-left: 20px;">- Current Role, Years Experience</li>
+                                    <li style="margin-left: 20px;">- Skills, Certifications</li>
+                                    <li style="margin-left: 20px;">- CV attachment URL</li>
+                                    <li style="margin-left: 20px;">- Screening notes from recruiter</li>
+                                </ul>
+                            </div>
+                            <div class="column-box">
+                                <h4>Send Client Email</h4>
+                                <ul>
+                                    <li>Get Client contact from Vacancy → Client link</li>
+                                    <li>Send professional submission email with:</li>
+                                    <li style="margin-left: 20px;">- Candidate summary (why matched for role)</li>
+                                    <li style="margin-left: 20px;">- Key qualifications highlighted</li>
+                                    <li style="margin-left: 20px;">- CV as attachment</li>
+                                    <li style="margin-left: 20px;">- Availability for interview</li>
+                                    <li style="margin-left: 20px;">- Direct contact link to recruiter</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TIMED FOLLOW-UPS -->
+                    <div class="details-section">
+                        <h3>Timed Follow-up Actions</h3>
+                        <div class="alert alert-info">
+                            <strong>24-Hour Checkpoint:</strong> Create task: "Check: [Client] received [Candidate] submission". Assigned to recruiter. Set due date: Submission date + 1 day. If feedback received, close task immediately. If no feedback by due date, auto-create next reminder.
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>48-Hour Follow-up:</strong> Query Applications where Stage = "Submitted" AND Created_Date < TODAY() - 2 days AND Response_Status = null. Create task: "FOLLOW UP: [Client] response needed for [Candidate]". Send email to client contact with subject: "Checking on [Candidate Name] - Vacancy [Vacancy Title]". Include direct phone number for quick response. Update Response_Timer_Started field.
+                        </div>
+                    </div>
+
+                    <!-- CLIENT RESPONSE HANDLING -->
+                    <div class="details-section">
+                        <h3>Client Response Processing</h3>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Response</th>
+                                    <th>Update Application Stage</th>
+                                    <th>Additional Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Shortlisted</td>
+                                    <td>Stage → "Shortlisted"</td>
+                                    <td>Send congratulations email to candidate. Create interview scheduling task. Update Candidate profile. Notify recruiter.</td>
+                                </tr>
+                                <tr>
+                                    <td>Rejected</td>
+                                    <td>Stage → "Rejected"</td>
+                                    <td>Log rejection reason in Communication Log. Send regret email to candidate. Create task for next candidate submission if vacancy still open.</td>
+                                </tr>
+                                <tr>
+                                    <td>Interview Scheduled</td>
+                                    <td>Stage → "Interview Scheduled"</td>
+                                    <td>Get interview details from client. Create Interview record. Trigger Interview Flow (Workflow 6).</td>
+                                </tr>
+                                <tr>
+                                    <td>Awaiting Feedback</td>
+                                    <td>Stage → "In Review"</td>
+                                    <td>Create task for follow-up in 3 days. Send email to client: "Any updates on [Candidate]?"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- IMPLEMENTATION -->
+                    <div class="details-section">
+                        <h3>Implementation Details</h3>
+                        <div class="implementation-section">
+                            <span class="impl-badge impl-make">Make</span>
+                            <span class="impl-badge impl-zapier">Zapier</span>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Setup:</strong> Create Make scenario: (1) Trigger on Stage = "Submitted", (2) Get Candidate details via lookup, (3) Get Client contact via Vacancy link, (4) Format and send professional email with CV, (5) Create initial checkin task. Create second scenario for 48-hour follow-up: Run daily, find old Submitted records with no response, send reminder email and create escalation task.
+                        </div>
+                    </div>
+
+                    <!-- TRACKING FIELDS -->
+                    <div class="details-section">
+                        <h3>Required Fields for Tracking</h3>
+                        <table class="field-table">
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>Table</th>
+                                    <th>Type</th>
+                                    <th>Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Submitted_Date</td>
+                                    <td>tblHU2swkWz9xPMTR</td>
+                                    <td>Date/Time</td>
+                                    <td>Track submission timestamp for follow-up triggers</td>
+                                </tr>
+                                <tr>
+                                    <td>Response_Status</td>
+                                    <td>tblHU2swkWz9xPMTR</td>
+                                    <td>Single Select</td>
+                                    <td>Pending / Received / Shortlisted / Rejected</td>
+                                </tr>
+                                <tr>
+                                    <td>Response_Date</td>
+                                    <td>tblHU2swkWz9xPMTR</td>
+                                    <td>Date/Time</td>
+                                    <td>When client responded</td>
+                                </tr>
+                                <tr>
+                                    <td>Feedback_Notes</td>
+                                    <td>tblHU2swkWz9xPMTR</td>
+                                    <td>Long Text</td>
+                                    <td>Client feedback and reasons</td>
+                                </tr>
+                                <tr>
+                                    <td>Days_to_Response</td>
+                                    <td>tblHU2swkWz9xPMTR</td>
+                                    <td>Formula/Number</td>
+                                    <td>Response_Date - Submitted_Date (performance metric)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ERROR HANDLING -->
+                    <div class="alert alert-warning">
+                        <strong>Error Handling:</strong> If client contact email missing: Use alternate contact from Clients & Employers table. If CV attachment unavailable: Send profile summary without attachment, flag for manual CV send. If email fails: Retry after 15 minutes, then create manual reminder task. Log all submission attempts in Communication Log.
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>Optimization:</strong> Track client response time SLA (target: 48 hours). Monitor which clients respond faster. Create performance scorecards. Auto-escalate overdue responses to leadership. Send periodic submission summaries to clients with multiple open vacancies.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>Eduplace Automation Blueprints | Airtable Base: appC97LZ25VRInfRq | Last Updated: April 2026</p>
+            <p>For questions or updates, contact your Recruitment Operations team.</p>
+        </div>
+    </div>
+
+    <!-- SCROLL TO TOP BUTTON -->
+    <button class="scroll-to-top" id="scrollToTopBtn" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // Sidebar navigation functionality
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                updateActiveNavLink(sectionId);
+            }
+        }
+
+        function updateActiveNavLink(sectionId) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            const activeLink = document.querySelector(`a[href="#${sectionId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+
+        // Scroll to top button
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Update active nav link on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.workflow-card, #intro');
+            let currentSection = 'intro';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    currentSection = section.id;
+                }
+            });
+
+            updateActiveNavLink(currentSection);
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial active link
+            updateActiveNavLink('intro');
+        });
+    </script>
+</body>
+</html>
