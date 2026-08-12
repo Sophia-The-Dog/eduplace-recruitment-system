@@ -148,7 +148,8 @@ class MetaClient:
 
     def post_facebook(self, message: str, link: Optional[str] = None,
                       image_url: Optional[str] = None,
-                      schedule_time: Optional[str] = None) -> Dict[str, Any]:
+                      schedule_time: Optional[str] = None,
+                      dry_run: bool = False) -> Dict[str, Any]:
         page_id = self.config['page_id']
         token = self.config['page_token']
         if not page_id or not token:
@@ -162,19 +163,27 @@ class MetaClient:
             params['published'] = 'false'
             params['scheduled_publish_time'] = scheduled
 
+        edge = 'photos' if image_url else 'feed'
         if image_url:
-            # Photo post: caption goes in `caption`.
-            params['url'] = image_url
+            params['url'] = image_url        # photo caption goes in `caption`
             params['caption'] = message
-            result = self._graph('POST', f'{page_id}/photos', token, params)
-            post_id = result.get('post_id') or result.get('id')
         else:
-            # Text / link post.
             params['message'] = message
             if link:
                 params['link'] = link
-            result = self._graph('POST', f'{page_id}/feed', token, params)
-            post_id = result.get('id')
+
+        if dry_run:
+            return {
+                'status': 'dry_run',
+                'config_ok': True,
+                'would_call': f'POST /{page_id}/{edge}',
+                'params_preview': sorted(params.keys()),
+                'scheduled_publish_time': scheduled,
+            }
+
+        result = self._graph('POST', f'{page_id}/{edge}', token, params)
+        post_id = (result.get('post_id') or result.get('id')) if edge == 'photos' \
+            else result.get('id')
 
         return {
             'status': 'scheduled' if scheduled else 'published',
@@ -205,7 +214,8 @@ class MetaClient:
 
     def post_instagram(self, message: str, image_url: Optional[str] = None,
                        video_url: Optional[str] = None,
-                       media_type: str = 'IMAGE') -> Dict[str, Any]:
+                       media_type: str = 'IMAGE',
+                       dry_run: bool = False) -> Dict[str, Any]:
         ig_id = self.config['ig_user_id']
         token = self.config['ig_token']
         if not ig_id or not token:
@@ -224,6 +234,18 @@ class MetaClient:
             if not image_url:
                 raise MetaError('Instagram IMAGE requires "image_url"')
             container['image_url'] = image_url
+
+        if dry_run:
+            steps = [f'POST /{ig_id}/media', f'POST /{ig_id}/media_publish']
+            if media_type == 'REELS':
+                steps.insert(1, 'GET /{creation_id}?fields=status_code')
+            return {
+                'status': 'dry_run',
+                'config_ok': True,
+                'media_type': media_type,
+                'would_call': steps,
+                'params_preview': sorted(container.keys()),
+            }
 
         # Step 1: create the media container.
         created = self._graph('POST', f'{ig_id}/media', token, container)
@@ -268,6 +290,7 @@ def publish(body: Dict[str, Any]) -> Dict[str, Any]:
 
     platforms = body.get('platforms') or ['facebook', 'instagram']
     platforms = [p.strip().lower() for p in platforms]
+    dry_run = bool(body.get('dry_run', False))
 
     results: Dict[str, Any] = {}
     for platform in platforms:
@@ -277,20 +300,22 @@ def publish(body: Dict[str, Any]) -> Dict[str, Any]:
                     message=message,
                     link=body.get('link'),
                     image_url=body.get('image_url'),
-                    schedule_time=body.get('schedule_time'))
+                    schedule_time=body.get('schedule_time'),
+                    dry_run=dry_run)
             elif platform == 'instagram':
                 results['instagram'] = client.post_instagram(
                     message=message,
                     image_url=body.get('image_url'),
                     video_url=body.get('video_url'),
-                    media_type=body.get('media_type', 'IMAGE'))
+                    media_type=body.get('media_type', 'IMAGE'),
+                    dry_run=dry_run)
             else:
                 results[platform] = {'status': 'error',
                                      'error': f'Unknown platform "{platform}"'}
         except MetaError as e:
             results[platform] = {'status': 'error', 'error': str(e)}
 
-    return {'brand': client.brand, 'results': results}
+    return {'brand': client.brand, 'dry_run': dry_run, 'results': results}
 
 
 def _configured_brands() -> List[str]:

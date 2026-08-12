@@ -6,7 +6,24 @@ distribution and scheduling.
 
 - **Endpoint:** `POST /api/social/publish`
 - **Status/config:** `GET /api/social/publish`
+- **Test console (mobile-friendly):** open `/social-test` in a browser — tap
+  *Check config* → *Dry run* → *Publish*. No terminal needed.
 - **Dependencies:** none (Python stdlib only — nothing added to `requirements.txt`)
+
+## Testing without a terminal
+
+Open **`/social-test`** on the deployed site (works on a phone):
+
+1. **Check config** — calls `GET` and lists which brands are wired and whether
+   signing is on. Confirms the function is deployed and reachable.
+2. **Dry run** — sends `dry_run: true`. Validates the brand's credentials exist
+   and shows the exact Graph calls that *would* be made, **without posting** and
+   without contacting Meta.
+3. **Publish for real** — only after a dry run looks right. Prompts for
+   confirmation, then sends the actual post.
+
+Any request may include `"dry_run": true` to get the same no-op validation via
+the API directly.
 
 ## Why this exists
 
