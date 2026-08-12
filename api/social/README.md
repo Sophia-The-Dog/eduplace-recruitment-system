@@ -54,7 +54,7 @@ the `brand` value upper-cased (`eduplace` → `EDUPLACE`, `mr-pigeon` → `MR_PI
 
 | Variable | Purpose |
 |---|---|
-| `META_GRAPH_VERSION` | Optional. Graph API version, default `v21.0`. |
+| `META_GRAPH_VERSION` | Optional. Graph API version, default `v25.0` (current stable as of 2026-08; v26.0 is latest). |
 | `META_APP_SECRET` | Optional. Enables `appsecret_proof` hardening on every call. |
 | `WEBHOOK_SECRET` | Optional. If set, requests must send a matching `X-Webhook-Signature` HMAC (same scheme as `/api/webhook`). |
 | `META_<BRAND>_PAGE_ID` | Facebook Page numeric ID. |
@@ -78,16 +78,42 @@ META_KOVA_IG_USER_ID=1780...
 
 ## Getting the tokens (one-time Meta setup)
 
-1. Create a Meta app at developers.facebook.com → add **Facebook Login** and
-   **Instagram Graph API** products.
-2. Each brand's Instagram must be a **Business/Creator** account linked to its
-   Facebook Page.
-3. Request permissions: `pages_manage_posts`, `pages_read_engagement`,
-   `instagram_basic`, `instagram_content_publish`, `business_management`.
-4. Generate a **long-lived Page access token** per brand (Page tokens don't
-   expire once long-lived, as long as the user token behind them is valid).
-5. App Review is required to publish for Pages you don't own — plan for that
-   before cutting a brand over.
+*Verified against Meta's current (2026) Graph API — this function uses the
+"Instagram API with Facebook Login" path: Page access token + an IG user ID
+that is linked to that Page, calling `graph.facebook.com/{ig-user-id}/...`.*
+
+1. Create a Meta app at developers.facebook.com → add **Facebook Login for
+   Business** and the **Instagram** product.
+2. Each brand's Instagram must be a **Professional (Business/Creator)** account
+   linked to its Facebook Page.
+3. Request and get App Review approval for:
+   - Facebook: `pages_manage_posts`, `pages_read_engagement`, `pages_show_list`,
+     and `pages_manage_metadata` (the last is needed for photo/video uploads).
+   - Instagram: `instagram_basic` + `instagram_content_publish`.
+     *(On the newer "Instagram API with Instagram Login" product these are named
+     `instagram_business_basic` / `instagram_business_content_publish`. The
+     endpoints below are the same either way — only the permission names and
+     token source differ.)*
+4. Generate a **long-lived Page access token** per brand. Page tokens derived
+   from a long-lived user token don't expire unless the user changes their
+   password, deauthorises the app, or their Page role changes.
+5. App Review is required for every permission beyond `public_profile`/`email`,
+   with a screencast per permission — plan for that lead time before cutting a
+   brand over.
+
+## Verified API facts (2026)
+
+- **Endpoints used** (confirmed current): FB `POST /{page-id}/feed`,
+  `POST /{page-id}/photos`; IG `POST /{ig-user-id}/media` then
+  `POST /{ig-user-id}/media_publish`; reels poll `GET /{creation-id}?fields=status_code`.
+- **FB scheduling**: `published=false` + `scheduled_publish_time` (Unix), window
+  10 minutes – 75 days. Native; no queue needed.
+- **IG rate limit**: hard cap of **25 published posts per account per rolling
+  24h** (reels/stories included). This function does not track that — a
+  scheduling queue in front of it should. Over the cap, Graph returns an error
+  that surfaces per-platform in the response.
+- Not relevant to us: Meta's March 2026 webhook mTLS CA change affects apps
+  *receiving* Meta webhooks, not this outbound publisher.
 
 ## Scheduling — important difference from Buffer
 

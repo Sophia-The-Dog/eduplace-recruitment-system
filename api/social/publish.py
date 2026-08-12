@@ -60,7 +60,9 @@ from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
-GRAPH_VERSION = os.environ.get('META_GRAPH_VERSION', 'v21.0')
+# Current stable as of 2026-08 is v25.0 (v26.0 is latest; its breaking changes
+# are ads/placement-side, not content publishing). Override via env when bumping.
+GRAPH_VERSION = os.environ.get('META_GRAPH_VERSION', 'v25.0')
 GRAPH_ROOT = f'https://graph.facebook.com/{GRAPH_VERSION}'
 
 # Facebook requires scheduled posts to be 10 minutes to 75 days in the future.
@@ -70,6 +72,12 @@ FB_SCHEDULE_MAX_SECONDS = 75 * 24 * 60 * 60
 # Instagram video/reel containers are processed asynchronously; poll before publish.
 IG_STATUS_MAX_POLLS = 12
 IG_STATUS_POLL_SECONDS = 5
+
+# Meta enforces a hard cap of 25 published posts per IG account per rolling 24h
+# (reels/stories count toward the same bucket). This function does NOT track that
+# quota - a scheduling queue in front of it should. Exceeding it returns a Graph
+# API error, which is surfaced per-platform in the response.
+IG_DAILY_POST_LIMIT = 25
 
 
 class MetaError(Exception):
