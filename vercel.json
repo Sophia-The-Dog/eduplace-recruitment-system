@@ -8,6 +8,7 @@
   "routes": [
     { "src": "/api/health", "dest": "/api/health.py" },
     { "src": "/api/webhook", "dest": "/api/webhook.py" },
+    { "src": "/api/social/publish", "dest": "/api/social/publish.py" },
     { "src": "/api/resume/parse", "dest": "/api/resume/parse.py" },
     { "src": "/api/resume/generate", "dest": "/api/resume/generate.py" },
     { "src": "/dashboard", "dest": "/public/dashboard.html" },

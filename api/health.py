@@ -16,7 +16,8 @@ class handler(BaseHTTPRequestHandler):
                 "health": "/api/health",
                 "resume_parse": "/api/resume/parse",
                 "resume_generate": "/api/resume/generate",
-                "webhook": "/api/webhook"
+                "webhook": "/api/webhook",
+                "social_publish": "/api/social/publish"
             },
             "airtable_base": "appC97LZ25VRInfRq",
             "tables": 16
