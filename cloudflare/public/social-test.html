@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eduplace Social Publisher — Test Console</title>
+<style>
+  :root{
+    --navy:#1B2A4A; --blue:#2E86AB; --gold:#D4A84B; --light-bg:#F5F7FA;
+    --white:#fff; --text-dark:#2C3E50; --text-light:#7F8C8D; --border:#E1E8ED;
+    --success:#27AE60; --danger:#E74C3C; --warning:#E67E22;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:var(--light-bg); color:var(--text-dark);
+    padding:16px; max-width:640px; margin:0 auto; line-height:1.5;
+  }
+  header{padding:8px 0 20px}
+  .logo{font-size:22px;font-weight:700;color:var(--navy)}
+  .logo span{color:var(--gold)}
+  .subtitle{font-size:13px;color:var(--text-light);margin-top:2px}
+  .card{
+    background:var(--white); border:1px solid var(--border); border-radius:12px;
+    padding:18px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,.04);
+  }
+  h2{font-size:15px;color:var(--navy);margin-bottom:14px;
+     text-transform:uppercase;letter-spacing:.5px}
+  label{display:block;font-size:13px;font-weight:600;color:var(--navy);
+        margin:12px 0 5px}
+  input[type=text],input[type=url],textarea,select{
+    width:100%; padding:12px; font-size:16px; border:1px solid var(--border);
+    border-radius:8px; background:#fff; color:var(--text-dark); font-family:inherit;
+  }
+  textarea{min-height:90px;resize:vertical}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:140px}
+  .checks{display:flex;gap:16px;margin-top:6px}
+  .checks label{display:flex;align-items:center;gap:8px;font-weight:500;margin:0}
+  .checks input{width:20px;height:20px}
+  .hint{font-size:12px;color:var(--text-light);margin-top:4px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  button{
+    flex:1; min-width:120px; padding:14px; font-size:15px; font-weight:600;
+    border:none; border-radius:8px; cursor:pointer; color:#fff;
+  }
+  .btn-check{background:var(--text-light)}
+  .btn-dry{background:var(--blue)}
+  .btn-pub{background:var(--gold);color:var(--navy)}
+  button:active{opacity:.85}
+  button:disabled{opacity:.5}
+  #out{
+    white-space:pre-wrap; word-break:break-word; font-family:'Monaco','Courier New',monospace;
+    font-size:12px; background:#0F1A2F; color:#d6e4f0; padding:14px;
+    border-radius:8px; margin-top:14px; display:none;
+  }
+  .status{padding:10px 12px;border-radius:8px;font-size:13px;font-weight:600;
+          margin-top:12px;display:none}
+  .status.ok{background:#E8F8F0;color:var(--success);display:block}
+  .status.err{background:#FFEBEE;color:var(--danger);display:block}
+  .status.pend{background:#FFF3E0;color:var(--warning);display:block}
+  .warn{background:#FFF9E6;border-left:4px solid var(--gold);padding:10px 12px;
+        border-radius:6px;font-size:13px;margin-bottom:14px}
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">EDU<span>PLACE</span></div>
+    <div class="subtitle">Social Publisher — Meta Direct · Test Console</div>
+  </header>
+
+  <div class="warn">
+    <strong>Publish</strong> sends a <em>real</em> post to Meta. Use
+    <strong>Check config</strong> and <strong>Dry run</strong> first — neither
+    posts anything.
+  </div>
+
+  <div class="card">
+    <h2>Connection</h2>
+    <label for="base">API base URL</label>
+    <input type="text" id="base" placeholder="/ (same site) or https://your-app.vercel.app">
+    <div class="hint">Leave as "/" if you opened this page on the deployed site.</div>
+    <label for="secret">Signature secret (only if WEBHOOK_SECRET is set)</label>
+    <input type="text" id="secret" placeholder="leave blank if signing is off">
+    <div class="btns">
+      <button class="btn-check" onclick="checkConfig()">Check config</button>
+    </div>
+    <div id="cfgStatus" class="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Post</h2>
+    <label for="brand">Brand</label>
+    <input type="text" id="brand" placeholder="eduplace" value="eduplace">
+    <div class="hint" id="brandHint">Configured brands appear after "Check config".</div>
+
+    <label>Platforms</label>
+    <div class="checks">
+      <label><input type="checkbox" id="fb" checked> Facebook</label>
+      <label><input type="checkbox" id="ig" checked> Instagram</label>
+    </div>
+
+    <label for="message">Message / caption</label>
+    <textarea id="message" placeholder="Your post text…">Eduplace test post ✅</textarea>
+
+    <div class="row">
+      <div>
+        <label for="image_url">Image URL <span class="hint">(req. for IG image)</span></label>
+        <input type="url" id="image_url" placeholder="https://…/image.jpg">
+      </div>
+      <div>
+        <label for="link">Link <span class="hint">(FB only)</span></label>
+        <input type="url" id="link" placeholder="https://eduplace.co.za">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="media_type">IG media type</label>
+        <select id="media_type">
+          <option value="IMAGE">IMAGE</option>
+          <option value="REELS">REELS</option>
+        </select>
+      </div>
+      <div>
+        <label for="video_url">Video URL <span class="hint">(IG reels)</span></label>
+        <input type="url" id="video_url" placeholder="https://…/reel.mp4">
+      </div>
+    </div>
+
+    <label for="schedule_time">Schedule time <span class="hint">(FB only, optional)</span></label>
+    <input type="text" id="schedule_time" placeholder="2026-08-20T09:00:00Z">
+    <div class="hint">ISO-8601, 10 min – 75 days ahead. Instagram ignores this (no native scheduling).</div>
+
+    <div class="btns">
+      <button class="btn-dry" onclick="send(true)">Dry run</button>
+      <button class="btn-pub" onclick="confirmPublish()">Publish for real</button>
+    </div>
+    <div id="postStatus" class="status"></div>
+    <pre id="out"></pre>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const base = () => ($('base').value.trim() || '/').replace(/\/$/, '');
+  const endpoint = () => base() + '/api/social/publish';
+
+  function show(el, cls, msg){ el.className = 'status ' + cls; el.textContent = msg; }
+  function dump(obj){ const o=$('out'); o.style.display='block'; o.textContent=JSON.stringify(obj,null,2); }
+
+  async function checkConfig(){
+    show($('cfgStatus'),'pend','Checking…');
+    try{
+      const r = await fetch(endpoint(), {method:'GET'});
+      const j = await r.json();
+      dump(j);
+      const brands = (j.configured_brands||[]);
+      show($('cfgStatus'), brands.length?'ok':'err',
+        brands.length ? `OK · Graph ${j.graph_version} · brands: ${brands.join(', ')}${j.signature_required?' · signing ON':''}`
+                      : 'Reached the API, but no brands are configured (set META_<BRAND>_* env vars).');
+      $('brandHint').textContent = brands.length ? ('Configured: ' + brands.join(', ')) : 'No brands configured yet.';
+    }catch(e){
+      show($('cfgStatus'),'err','Could not reach the API: ' + e.message + ' — check the base URL.');
+    }
+  }
+
+  // Optional HMAC-SHA256 signing to match api/webhook.py, computed in-browser.
+  async function sign(raw, secret){
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey('raw', enc.encode(secret),
+      {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
+    const sig = await crypto.subtle.sign('HMAC', key, enc.encode(raw));
+    return [...new Uint8Array(sig)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function buildBody(dry){
+    const platforms = [];
+    if($('fb').checked) platforms.push('facebook');
+    if($('ig').checked) platforms.push('instagram');
+    const body = { brand: $('brand').value.trim(), platforms, message: $('message').value, dry_run: dry };
+    for(const k of ['link','image_url','video_url','schedule_time']){
+      const v = $(k).value.trim(); if(v) body[k]=v;
+    }
+    if($('media_type').value) body.media_type = $('media_type').value;
+    return body;
+  }
+
+  function confirmPublish(){
+    if(confirm('This sends a REAL post to Meta. Continue?')) send(false);
+  }
+
+  async function send(dry){
+    const s = $('postStatus');
+    show(s,'pend', dry ? 'Running dry run…' : 'Publishing…');
+    try{
+      const body = buildBody(dry);
+      const raw = JSON.stringify(body);
+      const headers = {'Content-Type':'application/json'};
+      const secret = $('secret').value.trim();
+      if(secret) headers['X-Webhook-Signature'] = await sign(raw, secret);
+      const r = await fetch(endpoint(), {method:'POST', headers, body: raw});
+      const j = await r.json();
+      dump(j);
+      const results = j.results || {};
+      const bad = Object.values(results).filter(x=>x.status==='error');
+      if(bad.length===0 && Object.keys(results).length){
+        const kinds = Object.entries(results).map(([k,v])=>`${k}: ${v.status}`).join(' · ');
+        show(s,'ok', (dry?'Dry run OK · ':'Done · ') + kinds);
+      } else if(bad.length){
+        show(s,'err', 'Errors — ' + Object.entries(results).map(([k,v])=>`${k}: ${v.status==='error'?v.error:v.status}`).join(' | '));
+      } else {
+        show(s,'err', j.error || 'Unexpected response (see below).');
+      }
+    }catch(e){
+      show(s,'err','Request failed: ' + e.message);
+    }
+  }
+</script>
+</body>
+</html>

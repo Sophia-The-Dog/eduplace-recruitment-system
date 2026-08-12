@@ -1,0 +1,22 @@
+name = "eduplace-social"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# Non-secret var. Bump when you move to a newer Graph API version.
+[vars]
+META_GRAPH_VERSION = "v25.0"
+
+# Serves the test console (public/social-test.html) at /social-test.html.
+# The Worker handles /api/social/publish; everything else falls through to assets.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# Secrets are NOT set here. Add them in the Cloudflare dashboard
+# (Workers > your worker > Settings > Variables and Secrets) or via:
+#   npx wrangler secret put META_APP_SECRET
+#   npx wrangler secret put WEBHOOK_SECRET
+#   npx wrangler secret put META_EDUPLACE_PAGE_ID
+#   npx wrangler secret put META_EDUPLACE_PAGE_TOKEN
+#   npx wrangler secret put META_EDUPLACE_IG_USER_ID
+#   ...repeat per brand (KOVA, MRPIGEON, PCB, SEVENTHAVENUE, MERIDIAN)
